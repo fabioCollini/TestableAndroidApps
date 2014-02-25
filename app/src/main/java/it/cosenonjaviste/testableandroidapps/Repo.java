@@ -10,6 +10,7 @@ public class Repo implements Parcelable {
     private long id;
     private String name;
     private String description;
+    private Owner owner;
 
     public long getId() {
         return id;
@@ -23,6 +24,10 @@ public class Repo implements Parcelable {
         return description;
     }
 
+    public Owner getOwner() {
+        return owner;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -33,6 +38,7 @@ public class Repo implements Parcelable {
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeString(description);
+        dest.writeParcelable(owner, 0);
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -41,6 +47,7 @@ public class Repo implements Parcelable {
             repo.id = in.readLong();
             repo.name = in.readString();
             repo.description = in.readString();
+            repo.owner = in.readParcelable(Repo.class.getClassLoader());
             return repo;
         }
 
@@ -51,6 +58,6 @@ public class Repo implements Parcelable {
 
     @Override
     public String toString() {
-        return name;
+        return owner.getName() + " - " + name;
     }
 }
