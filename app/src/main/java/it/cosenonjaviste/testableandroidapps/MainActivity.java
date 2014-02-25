@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -49,6 +50,15 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(repoAdapter);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(SearchService.EVENT_NAME));
+
+        if (isMorning()) {
+            new WelcomeDialog().show(getSupportFragmentManager(), "welcome");
+        }
+    }
+
+    private boolean isMorning() {
+        int hour = new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY);
+        return hour > 6 && hour < 12;
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -74,4 +84,6 @@ public class MainActivity extends ActionBarActivity {
         intent.putExtra(SearchService.QUERY, query.getText().toString());
         startService(intent);
     }
+
+
 }
