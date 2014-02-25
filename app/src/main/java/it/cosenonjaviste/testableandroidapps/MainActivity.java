@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -26,13 +27,21 @@ public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.query) EditText query;
 
+    @InjectView(R.id.progress) View progress;
+
+    @InjectView(R.id.reload) View reload;
+
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             ArrayList<Repo> repos = intent.getParcelableArrayListExtra(SearchService.REPOS);
             if (repos != null) {
                 repoAdapter.reloadData(repos);
+                listView.setVisibility(View.VISIBLE);
+            } else {
+                reload.setVisibility(View.VISIBLE);
             }
+            progress.setVisibility(View.GONE);
         }
     };
 
@@ -79,11 +88,12 @@ public class MainActivity extends ActionBarActivity {
         return false;
     }
 
-    @OnClick(R.id.search) void executeSearch() {
+    @OnClick({R.id.search, R.id.reload}) void executeSearch() {
+        progress.setVisibility(View.VISIBLE);
+        reload.setVisibility(View.GONE);
+        listView.setVisibility(View.GONE);
         Intent intent = new Intent(MainActivity.this, SearchService.class);
         intent.putExtra(SearchService.QUERY, query.getText().toString());
         startService(intent);
     }
-
-
 }

@@ -1,14 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <ImageButton
         android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/search"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"/>
 
     <EditText
         android:id="@+id/query"
@@ -17,13 +17,36 @@
         android:layout_alignBottom="@id/search"
         android:singleLine="true"
         android:imeOptions="actionSearch"
-        android:layout_toLeftOf="@+id/search" />
+        android:layout_toLeftOf="@+id/search"/>
 
-    <ListView
-        android:id="@+id/list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/search" />
+        android:layout_below="@+id/search"
+        android:gravity="center">
 
+        <Button
+            android:id="@+id/reload"
+            android:text="@string/reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 </RelativeLayout>
