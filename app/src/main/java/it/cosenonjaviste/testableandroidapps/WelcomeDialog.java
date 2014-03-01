@@ -10,9 +10,6 @@ import java.util.GregorianCalendar;
 
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 
-/**
- * Created by fabiocollini on 25/02/14.
- */
 public class WelcomeDialog extends DialogFragment {
 
     public static void showDialogIfNeeded(FragmentActivity activity) {

@@ -8,9 +8,6 @@ import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import retrofit.RestAdapter;
 
-/**
- * Created by fabiocollini on 09/02/14.
- */
 public class SearchService extends IntentService {
 
     public static final String EVENT_NAME = "search-event";

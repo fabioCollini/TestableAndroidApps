@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.format.DateUtils;
 
-/**
- * Created by fabiocollini on 01/03/14.
- */
 public class DatePrefsSaver {
     private String key;
     private final SharedPreferences prefs;

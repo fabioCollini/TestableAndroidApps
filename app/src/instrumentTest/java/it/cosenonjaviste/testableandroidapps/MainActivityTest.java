@@ -6,9 +6,6 @@ import android.widget.ListView;
 
 import com.jayway.android.robotium.solo.Solo;
 
-/**
- * Created by fabiocollini on 01/03/14.
- */
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
     private Solo solo;
 

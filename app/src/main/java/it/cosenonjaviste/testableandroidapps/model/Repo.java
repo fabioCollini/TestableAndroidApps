@@ -3,9 +3,6 @@ package it.cosenonjaviste.testableandroidapps.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * Created by fabiocollini on 09/02/14.
- */
 public class Repo implements Parcelable {
     private long id;
     private String name;

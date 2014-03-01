@@ -5,9 +5,6 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by fabiocollini on 25/02/14.
- */
 public class Owner implements Parcelable {
     private long id;
 
