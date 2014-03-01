@@ -47,4 +47,11 @@ dependencies {
     compile 'com.github.frankiesardo:icepick:2.3.1'
     compile 'com.squareup.picasso:picasso:2.2.0'
     provided 'com.github.frankiesardo:icepick-processor:2.3.1'
+
+    instrumentTestCompile 'com.squareup:fest-android:1.0.+'
+    instrumentTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    instrumentTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
+    instrumentTestCompile 'org.mockito:mockito-core:1.9.5'
+    instrumentTestCompile 'com.jayway.android.robotium:robotium-solo:4.3.1'
+    instrumentTestCompile 'com.squareup.spoon:spoon-client:1.0.5'
 }
