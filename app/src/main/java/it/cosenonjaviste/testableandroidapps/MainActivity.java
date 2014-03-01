@@ -14,6 +14,8 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -31,6 +33,8 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.progress) View progress;
 
     @InjectView(R.id.reload) View reload;
+
+    @Inject WelcomeDialogManager welcomeDialogManager;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -50,6 +54,9 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ((TestableApp) getApplication()).inject(this);
+
         setContentView(R.layout.activity_main);
 
         ButterKnife.inject(this);
@@ -61,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(SearchService.EVENT_NAME));
 
-        WelcomeDialog.showDialogIfNeeded(this);
+        welcomeDialogManager.showDialogIfNeeded(this);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
