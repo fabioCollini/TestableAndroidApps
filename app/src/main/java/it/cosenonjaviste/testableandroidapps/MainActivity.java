@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
@@ -13,13 +14,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import icepick.Icepick;
+import retrofit.RestAdapter;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -66,8 +67,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private boolean isMorning() {
-        int hour = new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY);
-        return hour > 6 && hour < 12;
+        return false;
+//        int hour = new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY);
+//        return hour > 6 && hour < 12;
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -89,11 +91,36 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
-        progress.setVisibility(View.VISIBLE);
-        reload.setVisibility(View.GONE);
-        listView.setVisibility(View.GONE);
-        Intent intent = new Intent(MainActivity.this, SearchService.class);
-        intent.putExtra(SearchService.QUERY, query.getText().toString());
-        startService(intent);
+//        progress.setVisibility(View.VISIBLE);
+//        reload.setVisibility(View.GONE);
+//        listView.setVisibility(View.GONE);
+//        Intent intent = new Intent(MainActivity.this, SearchService.class);
+//        intent.putExtra(SearchService.QUERY, query.getText().toString());
+//        startService(intent);
+
+        new AsyncTask<Void, Void, RepoResponse>() {
+            @Override protected RepoResponse doInBackground(Void... params) {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                RestAdapter restAdapter = new RestAdapter.Builder()
+                        .setEndpoint("https://api.github.com")
+                        .build();
+                GitHubService service = restAdapter.create(GitHubService.class);
+
+                try {
+                    return service.listRepos(query.getText().toString());
+                } catch (Throwable t) {
+                }
+                return null;
+            }
+
+            @Override protected void onPostExecute(RepoResponse repoResponse) {
+                repoAdapter.reloadData(repoResponse.getItems());
+                listView.setVisibility(View.VISIBLE);
+            }
+        }.execute();
     }
 }

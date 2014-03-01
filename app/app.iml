@@ -74,6 +74,7 @@
     <orderEntry type="library" exported="" name="guava-15.0" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="android-espresso-bundled-1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" exported="" name="butterknife-4.0.1" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.4.1" level="project" />
     <orderEntry type="library" exported="" name="icepick-2.3.1" level="project" />

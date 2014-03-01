@@ -19,7 +19,11 @@
 
         <service android:name=".SearchService" />
 
-
+        <!--
+-->
+        <instrumentation
+            android:name="android.test.InstrumentationTestRunner"
+            android:targetPackage="it.cosenonjaviste.testableandroidapps.test"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

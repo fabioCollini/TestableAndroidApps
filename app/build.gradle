@@ -10,6 +10,9 @@
 
 repositories {
     mavenCentral()
+    maven {
+        url "https://github.com/novoda/public-mvn-repo/raw/master/releases"
+    }
 }
 
 apply plugin: 'android'
@@ -30,6 +33,7 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
         release {
@@ -47,4 +51,29 @@ dependencies {
     compile 'com.github.frankiesardo:icepick:2.3.1'
     compile 'com.squareup.picasso:picasso:2.2.0'
     provided 'com.github.frankiesardo:icepick-processor:2.3.1'
+
+    instrumentTestCompile "com.google.android:android-espresso-bundled:1.1.0-SNAPSHOT"
+
+    //instrumentTestCompile 'com.jakewharton.espresso:espresso:1.1-r2'
+
+    /*
+    instrumentTestCompile('com.jakewharton.espresso:espresso:1.1-r1') {
+        exclude group:'com.google.guava', module:'guava'
+    }
+    instrumentTestCompile('com.jakewharton.espresso:espresso-support-v4:1.1-r1') {
+        exclude group:'com.android.support', module:'support-v4'
+        exclude group:'com.google.guava', module:'guava'
+    }
+     */
+
+
+    /*instrumentTestCompile {
+        // TODO workaround for http://b.android.com/65445
+        exclude group:'com.google.guava', module:'guava'
+    }
+    instrumentTestCompile(project(':espresso-support-v4')) {
+        // TODO workaround for http://b.android.com/65445
+        exclude group:'com.android.support', module:'support-v4'
+        exclude group:'com.google.guava', module:'guava'
+    }*/
 }
