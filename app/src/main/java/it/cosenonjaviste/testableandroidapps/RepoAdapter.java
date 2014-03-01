@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import icepick.Icicle;
+import it.cosenonjaviste.testableandroidapps.model.Repo;
 
 /**
  * Created by fabiocollini on 15/02/14.

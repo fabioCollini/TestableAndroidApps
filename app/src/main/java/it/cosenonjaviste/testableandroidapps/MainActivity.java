@@ -13,13 +13,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import icepick.Icepick;
+import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.service.SearchService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -60,14 +61,7 @@ public class MainActivity extends ActionBarActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(SearchService.EVENT_NAME));
 
-        if (isMorning()) {
-            new WelcomeDialog().show(getSupportFragmentManager(), "welcome");
-        }
-    }
-
-    private boolean isMorning() {
-        int hour = new GregorianCalendar().get(GregorianCalendar.HOUR_OF_DAY);
-        return hour > 6 && hour < 12;
+        WelcomeDialog.showDialogIfNeeded(this);
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {

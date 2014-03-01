@@ -1,9 +1,11 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import it.cosenonjaviste.testableandroidapps.model.GitHubService;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import retrofit.RestAdapter;
 
 /**
