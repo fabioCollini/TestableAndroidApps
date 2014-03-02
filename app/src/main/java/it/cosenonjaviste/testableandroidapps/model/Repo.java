@@ -3,10 +3,18 @@ package it.cosenonjaviste.testableandroidapps.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Repo implements Parcelable {
     private long id;
+
     private String name;
+
     private String description;
+
+    @SerializedName("html_url")
+    private String url;
+
     private Owner owner;
 
     public long getId() {
@@ -19,6 +27,10 @@ public class Repo implements Parcelable {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getUrl() {
+        return url;
     }
 
     public Owner getOwner() {
@@ -35,6 +47,7 @@ public class Repo implements Parcelable {
         dest.writeLong(id);
         dest.writeString(name);
         dest.writeString(description);
+        dest.writeString(url);
         dest.writeParcelable(owner, 0);
     }
 
@@ -44,6 +57,7 @@ public class Repo implements Parcelable {
             repo.id = in.readLong();
             repo.name = in.readString();
             repo.description = in.readString();
+            repo.url = in.readString();
             repo.owner = in.readParcelable(Repo.class.getClassLoader());
             return repo;
         }
