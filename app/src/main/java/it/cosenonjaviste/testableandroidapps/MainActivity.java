@@ -20,10 +20,12 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
+import butterknife.OnItemClick;
 import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
+import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -70,6 +72,11 @@ public class MainActivity extends ActionBarActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(SearchService.EVENT_NAME));
 
         welcomeDialogManager.showDialogIfNeeded(this);
+    }
+
+    @OnItemClick(R.id.list) void shareItem(int position) {
+        Repo repo = repoAdapter.getItem(position);
+        ShareHelper.share(this, repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {

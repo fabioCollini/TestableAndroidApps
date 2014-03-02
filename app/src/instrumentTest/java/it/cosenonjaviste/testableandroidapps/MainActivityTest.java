@@ -32,5 +32,7 @@ public class MainActivityTest extends BaseActivityTest {
         waitForVisibleView(list, 5000);
 
         assertEquals(30, list.getAdapter().getCount());
+
+        solo.clickInList(3);
     }
 }
