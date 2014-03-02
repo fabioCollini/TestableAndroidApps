@@ -21,6 +21,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import icepick.Icepick;
+import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 
@@ -55,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ((TestableApp) getApplication()).inject(this);
+        ObjectGraphHolder.inject(this);
 
         setContentView(R.layout.activity_main);
 
