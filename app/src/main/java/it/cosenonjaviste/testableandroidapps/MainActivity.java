@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ObjectGraphHolder.inject(this);
+        ObjectGraphHolder.inject(getApplication(), this);
 
         setContentView(R.layout.activity_main);
 

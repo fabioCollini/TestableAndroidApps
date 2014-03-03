@@ -11,13 +11,9 @@ public class TestableApp extends Application {
     @Override public void onCreate() {
         super.onCreate();
         ObjectGraphHolder.setObjectGraphCreator(new ObjectGraphCreator() {
-            @Override public ObjectGraph create() {
-                return ObjectGraph.create(getModules());
+            @Override public ObjectGraph create(Application app) {
+                return ObjectGraph.create(new AppModule(app));
             }
         });
-    }
-
-    public static Object[] getModules() {
-        return new Object[]{new AppModule()};
     }
 }

@@ -1,5 +1,7 @@
 package it.cosenonjaviste.testableandroidapps.base;
 
+import android.app.Application;
+
 import dagger.ObjectGraph;
 
 public class ObjectGraphHolder {
@@ -7,9 +9,9 @@ public class ObjectGraphHolder {
 
     private static ObjectGraphCreator objectGraphCreator;
 
-    public static ObjectGraph getObjectGraph() {
+    public static ObjectGraph getObjectGraph(Application app) {
         if (objectGraph == null) {
-            objectGraph = objectGraphCreator.create();
+            objectGraph = objectGraphCreator.create(app);
         }
         return objectGraph;
     }
@@ -25,8 +27,8 @@ public class ObjectGraphHolder {
         objectGraph = null;
     }
 
-    public static void inject(Object obj) {
-        ObjectGraphHolder.getObjectGraph().inject(obj);
+    public static void inject(Application app, Object obj) {
+        ObjectGraphHolder.getObjectGraph(app).inject(obj);
     }
 
 }

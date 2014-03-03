@@ -1,5 +1,6 @@
 package it.cosenonjaviste.testableandroidapps;
 
+import android.app.Application;
 import android.widget.ListView;
 
 import dagger.ObjectGraph;
@@ -16,8 +17,8 @@ public class MainActivityTest extends BaseActivityTest {
     public void setUp() throws Exception {
         super.setUp();
         ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
-            @Override public ObjectGraph create() {
-                return ObjectGraph.create(new AppModule(), new WelcomeDialogManagerTestModule());
+            @Override public ObjectGraph create(Application app) {
+                return ObjectGraph.create(new AppModule(app), new WelcomeDialogManagerTestModule());
             }
         });
     }
