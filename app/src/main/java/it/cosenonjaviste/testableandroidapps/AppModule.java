@@ -6,12 +6,15 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import it.cosenonjaviste.testableandroidapps.model.GitHubService;
+import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
+import retrofit.RestAdapter;
 
-@Module(injects = MainActivity.class)
+@Module(injects = {MainActivity.class, SearchService.class})
 public class AppModule {
 
     private Application application;
@@ -28,5 +31,13 @@ public class AppModule {
     @Provides @Singleton
     public DatePrefsSaver provideDatePrefsSaver() {
         return new DatePrefsSaverImpl(application, "welcome_dialog_last_date");
+    }
+
+    @Provides @Singleton
+    public GitHubService provideGitHubService() {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint("https://api.github.com")
+                .build();
+        return restAdapter.create(GitHubService.class);
     }
 }

@@ -4,9 +4,11 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
+import javax.inject.Inject;
+
+import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
-import retrofit.RestAdapter;
 
 public class SearchService extends IntentService {
 
@@ -15,17 +17,19 @@ public class SearchService extends IntentService {
     public static final String REPOS = "repos";
     public static final String ERROR = "error";
 
+    @Inject GitHubService service;
+
     public SearchService() {
         super("SearchService");
     }
 
+    @Override public void onCreate() {
+        super.onCreate();
+        ObjectGraphHolder.inject(getApplication(), this);
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint("https://api.github.com")
-                .build();
-        GitHubService service = restAdapter.create(GitHubService.class);
-
         Intent resIntent = new Intent(EVENT_NAME);
         try {
             RepoResponse repos = service.listRepos(intent.getStringExtra(QUERY));
