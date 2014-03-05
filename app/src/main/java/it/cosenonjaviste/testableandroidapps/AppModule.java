@@ -14,7 +14,7 @@ import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
 
-@Module(injects = {MainActivity.class, SearchService.class})
+@Module(injects = {SearchService.class}, library = true)
 public class AppModule {
 
     private Application application;

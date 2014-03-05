@@ -13,11 +13,13 @@ import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 @Singleton
 public class WelcomeDialogManager {
 
+    @Inject FragmentActivity activity;
+
     @Inject Clock clock;
 
     @Inject DatePrefsSaver datePrefsSaver;
 
-    public void showDialogIfNeeded(FragmentActivity activity) {
+    public void showDialogIfNeeded() {
         if (isMorning() && !datePrefsSaver.isTodaySaved()) {
             new WelcomeDialog().show(activity.getSupportFragmentManager(), "welcome");
             datePrefsSaver.saveNow();
