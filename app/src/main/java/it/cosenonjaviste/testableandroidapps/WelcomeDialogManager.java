@@ -5,10 +5,12 @@ import android.support.v4.app.FragmentActivity;
 import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 
+@Singleton
 public class WelcomeDialogManager {
 
     @Inject Clock clock;
