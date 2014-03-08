@@ -15,7 +15,7 @@ import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
 
-@Module(injects = {SearchService.class, EventBusRegister.class}, library = true)
+@Module(injects = {EventBusRegister.class}, library = true)
 public class AppModule {
 
     private Application application;
@@ -45,5 +45,10 @@ public class AppModule {
     @Provides @Singleton
     public EventBus provideEventBus() {
         return new EventBus();
+    }
+
+    @EventBusRegistered @Provides(type = Provides.Type.SET) @Singleton
+    public Object provideSearchService(SearchService searchService) {
+        return searchService;
     }
 }
