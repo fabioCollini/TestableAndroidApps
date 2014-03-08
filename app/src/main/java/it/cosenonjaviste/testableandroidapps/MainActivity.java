@@ -12,15 +12,15 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.util.ArrayList;
+import org.parceler.Parcels;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnItemClick;
-import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
@@ -37,9 +37,9 @@ public class MainActivity extends ActionBarActivity {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ArrayList<Repo> repos = intent.getParcelableArrayListExtra(SearchService.REPOS);
+            RepoResponse repos = Parcels.unwrap(intent.getParcelableExtra(SearchService.REPOS));
             if (repos != null) {
-                repoAdapter.reloadData(repos);
+                repoAdapter.reloadData(repos.getItems());
                 listView.setVisibility(View.VISIBLE);
             } else {
                 reload.setVisibility(View.VISIBLE);
@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
 
         repoAdapter = new RepoAdapter(this);
-        Icepick.restoreInstanceState(repoAdapter, savedInstanceState);
+        repoAdapter.loadFromBundle(savedInstanceState);
 
         listView.setAdapter(repoAdapter);
 
@@ -73,7 +73,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(repoAdapter, outState);
+        repoAdapter.saveInBundle(outState);
     }
 
     @Override protected void onDestroy() {
