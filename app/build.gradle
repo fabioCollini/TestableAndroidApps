@@ -1,29 +1,12 @@
-/*buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'me.tatarka:gradle-retrolambda:1.1.1'
-    }
-}*/
-
 repositories {
     mavenCentral()
 }
 
 apply plugin: 'android'
 
-//apply plugin: 'retrolambda'
-
 android {
-    /*compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }*/
-
     compileSdkVersion 19
-    buildToolsVersion '19.0.1'
+    buildToolsVersion '19.0.3'
 
     defaultConfig {
         minSdkVersion 8
@@ -48,10 +31,10 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.2.0'
     provided 'com.github.frankiesardo:icepick-processor:2.3.1'
 
-    instrumentTestCompile 'com.squareup:fest-android:1.0.+'
-    instrumentTestCompile 'com.google.dexmaker:dexmaker:1.0'
-    instrumentTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
-    instrumentTestCompile 'org.mockito:mockito-core:1.9.5'
-    instrumentTestCompile 'com.jayway.android.robotium:robotium-solo:4.3.1'
-    instrumentTestCompile 'com.squareup.spoon:spoon-client:1.0.5'
+    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.0'
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestCompile 'com.jayway.android.robotium:robotium-solo:4.3.1'
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.0.5'
 }
