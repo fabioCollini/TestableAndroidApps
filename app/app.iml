@@ -89,6 +89,7 @@
     <orderEntry type="library" exported="" scope="TEST" name="objenesis-1.0" level="project" />
     <orderEntry type="library" exported="" name="icepick-processor-2.3.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="dexmaker-1.0" level="project" />
+    <orderEntry type="module" module-name="model" exported="" />
   </component>
 </module>
 
