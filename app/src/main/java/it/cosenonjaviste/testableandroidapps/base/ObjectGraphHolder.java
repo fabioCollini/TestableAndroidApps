@@ -3,6 +3,7 @@ package it.cosenonjaviste.testableandroidapps.base;
 import android.app.Application;
 
 import dagger.ObjectGraph;
+import it.cosenonjaviste.testableandroidapps.EventBusRegister;
 
 public class ObjectGraphHolder {
     private static ObjectGraph objectGraph;
@@ -12,6 +13,8 @@ public class ObjectGraphHolder {
     public static ObjectGraph getObjectGraph(Application app) {
         if (objectGraph == null) {
             objectGraph = objectGraphCreator.create(app);
+            EventBusRegister eventBusRegister = objectGraph.get(EventBusRegister.class);
+            eventBusRegister.registerAll();
         }
         return objectGraph;
     }

@@ -1,42 +1,27 @@
 package it.cosenonjaviste.testableandroidapps.service;
 
-import android.app.IntentService;
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
-
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import de.greenrobot.event.EventBus;
+import it.cosenonjaviste.testableandroidapps.EventBusRegistered;
+import it.cosenonjaviste.testableandroidapps.SearchEvent;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 
-public class SearchService extends IntentService {
-
-    public static final String EVENT_NAME = "search-event";
-    public static final String QUERY = "query";
-    public static final String REPOS = "repos";
-    public static final String ERROR = "error";
+@Singleton @EventBusRegistered
+public class SearchService {
 
     @Inject GitHubService service;
 
-    public SearchService() {
-        super("SearchService");
-    }
+    @Inject EventBus eventBus;
 
-    @Override public void onCreate() {
-        super.onCreate();
-        ObjectGraphHolder.inject(getApplication(), this);
-    }
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        Intent resIntent = new Intent(EVENT_NAME);
+    protected void onEventBackgroundThread(SearchEvent event) {
         try {
-            RepoResponse repos = service.listRepos(intent.getStringExtra(QUERY));
-            resIntent.putParcelableArrayListExtra(REPOS, repos.getItems());
+            RepoResponse repos = service.listRepos(event.getQuery());
+            eventBus.post(new SearchEvent.Result(repos.getItems()));
         } catch (Throwable t) {
-            resIntent.putExtra(ERROR, t.getMessage());
+            eventBus.post(new SearchEvent.Error());
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(resIntent);
     }
 }

@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import de.greenrobot.event.EventBus;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
@@ -14,7 +15,7 @@ import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
 
-@Module(injects = {SearchService.class}, library = true)
+@Module(injects = {SearchService.class, EventBusRegister.class}, library = true)
 public class AppModule {
 
     private Application application;
@@ -39,5 +40,10 @@ public class AppModule {
                 .setEndpoint("https://api.github.com")
                 .build();
         return restAdapter.create(GitHubService.class);
+    }
+
+    @Provides @Singleton
+    public EventBus provideEventBus() {
+        return new EventBus();
     }
 }

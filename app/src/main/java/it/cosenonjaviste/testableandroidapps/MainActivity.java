@@ -1,19 +1,12 @@
 package it.cosenonjaviste.testableandroidapps;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import java.util.ArrayList;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,10 +19,10 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
+import de.greenrobot.event.EventBus;
 import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
-import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 public class MainActivity extends ActionBarActivity {
@@ -44,19 +37,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ArrayList<Repo> repos = intent.getParcelableArrayListExtra(SearchService.REPOS);
-            if (repos != null) {
-                repoAdapter.reloadData(repos);
-                listView.setVisibility(View.VISIBLE);
-            } else {
-                reload.setVisibility(View.VISIBLE);
-            }
-            progress.setVisibility(View.GONE);
-        }
-    };
+    @Inject EventBus eventBus;
 
     private RepoAdapter repoAdapter;
 
@@ -76,9 +57,20 @@ public class MainActivity extends ActionBarActivity {
 
         listView.setAdapter(repoAdapter);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(SearchService.EVENT_NAME));
+        eventBus.register(this);
 
         welcomeDialogManager.showDialogIfNeeded();
+    }
+
+    public void onEventMainThread(SearchEvent.Result event) {
+        repoAdapter.reloadData(event.getRepos());
+        listView.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
+    }
+
+    public void onEventMainThread(SearchEvent.Error event) {
+        reload.setVisibility(View.VISIBLE);
+        progress.setVisibility(View.GONE);
     }
 
     @OnItemClick(R.id.list) void shareItem(int position) {
@@ -92,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        eventBus.unregister(this);
         super.onDestroy();
     }
 
@@ -108,9 +100,7 @@ public class MainActivity extends ActionBarActivity {
         progress.setVisibility(View.VISIBLE);
         reload.setVisibility(View.GONE);
         listView.setVisibility(View.GONE);
-        Intent intent = new Intent(MainActivity.this, SearchService.class);
-        intent.putExtra(SearchService.QUERY, query.getText().toString());
-        startService(intent);
+        eventBus.post(new SearchEvent(query.getText().toString()));
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
