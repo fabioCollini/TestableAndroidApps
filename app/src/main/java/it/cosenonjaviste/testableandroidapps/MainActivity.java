@@ -21,8 +21,9 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnItemClick;
-import icepick.Icepick;
+import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
