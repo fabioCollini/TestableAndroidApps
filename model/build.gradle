@@ -5,4 +5,6 @@ dependencies {
     testCompile 'junit:junit:4.10'
     compile 'com.google.android:android:2.2.1'
     compile 'com.squareup.retrofit:retrofit:1.4.1'
+    compile 'org.parceler:parceler:0.2.7'
+    compile 'org.parceler:parceler-api:0.2.7'
 }
