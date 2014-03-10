@@ -15,3 +15,39 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontwarn butterknife.Views$InjectViewProcessor
+-dontwarn rx.**
+-dontwarn retrofit.**
+-dontwarn org.parceler.**
+-dontwarn butterknife.**
+-dontwarn com.google.common.**
+-dontwarn org.androidtransfuse.**
+-dontwarn org.apache.commons.**
+-dontwarn com.squareup.picasso.**
+-dontwarn com.squareup.okhttp.**
+-dontwarn com.sun.codemodel.**
+-dontwarn javax_.annotation.**
+-dontwarn javax_.lang.**
+
+-keep interface org.parceler.Parcel
+-keep @org.parceler.Parcel class * { *; }
+-keep class **$$Parcelable { *; }
+-keep class org.parceler.Parceler$$Parcels
+
+-keep class com.google.gson.** { *; }
+-keep class com.google.inject.** { *; }
+-keep class org.apache.http.** { *; }
+-keep class org.apache.james.mime4j.** { *; }
+-keep class javax.inject.** { *; }
+-keep class retrofit.** { *; }
+
+-keep class it.cosenonjaviste.testableandroidapps.** { *; }
+
+-keepattributes Signature
+
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }

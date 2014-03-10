@@ -33,6 +33,9 @@ public class ParsingTest {
         BufferedReader reader = null;
         try {
             File file = new File("model/src/test/resources" + fileName);
+            if (!file.exists()) {
+                file = new File("src/test/resources" + fileName);
+            }
             reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
             String line;
             while ((line = reader.readLine()) != null) {
