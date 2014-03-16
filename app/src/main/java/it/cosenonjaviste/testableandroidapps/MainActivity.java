@@ -21,7 +21,10 @@ import dagger.ObjectGraph;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import icepick.Icepick;
+import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
+import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
@@ -38,6 +41,10 @@ public class MainActivity extends ActionBarActivity {
     @Inject WelcomeDialogManager welcomeDialogManager;
 
     @Inject EventBus eventBus;
+
+    @Inject GitHubService service;
+
+    @Inject BackgroundExecutor backgroundExecutor;
 
     private RepoAdapter repoAdapter;
 
@@ -62,13 +69,13 @@ public class MainActivity extends ActionBarActivity {
         welcomeDialogManager.showDialogIfNeeded();
     }
 
-    public void onEventMainThread(SearchEvent.Result event) {
+    public void onEventMainThread(SearchResult event) {
         repoAdapter.reloadData(event.getRepos());
         listView.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
     }
 
-    public void onEventMainThread(SearchEvent.Error event) {
+    public void onEventMainThread(SearchError event) {
         reload.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
     }
@@ -100,7 +107,13 @@ public class MainActivity extends ActionBarActivity {
         progress.setVisibility(View.VISIBLE);
         reload.setVisibility(View.GONE);
         listView.setVisibility(View.GONE);
-        eventBus.post(new SearchEvent(query.getText().toString()));
+
+        String queryString = query.getText().toString();
+        backgroundExecutor.executeInBackground(queryString, SearchError.class, new Function<String, SearchResult>() {
+            @Override public SearchResult apply(String query) {
+                return new SearchResult(service.listRepos(query).getItems());
+            }
+        });
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)

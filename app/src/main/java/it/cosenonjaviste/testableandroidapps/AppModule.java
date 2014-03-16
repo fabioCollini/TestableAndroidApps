@@ -8,14 +8,13 @@ import dagger.Module;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
-import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
 
-@Module(injects = {EventBusRegister.class}, library = true)
+@Module(injects = {}, library = true)
 public class AppModule {
 
     private Application application;
@@ -45,10 +44,5 @@ public class AppModule {
     @Provides @Singleton
     public EventBus provideEventBus() {
         return new EventBus();
-    }
-
-    @EventBusRegistered @Provides(type = Provides.Type.SET) @Singleton
-    public Object provideSearchService(SearchService searchService) {
-        return searchService;
     }
 }
