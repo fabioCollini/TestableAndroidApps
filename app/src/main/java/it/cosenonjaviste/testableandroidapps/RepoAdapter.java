@@ -19,7 +19,7 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 
 public class RepoAdapter extends BaseAdapter {
 
-    @Icicle ArrayList<Repo> repos = new ArrayList<Repo>();
+    @Icicle ArrayList<Repo> repos = new ArrayList<>();
 
     private Context context;
 

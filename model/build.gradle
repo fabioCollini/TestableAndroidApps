@@ -1,4 +1,24 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:1.3.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
 apply plugin: 'java'
+
+apply plugin: 'retrolambda'
+
+retrolambda {
+    jdk '/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/'
+}
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])

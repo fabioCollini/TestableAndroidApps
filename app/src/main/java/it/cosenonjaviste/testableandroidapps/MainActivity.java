@@ -22,11 +22,10 @@ import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
-import it.cosenonjaviste.testableandroidapps.base.BiFunction;
-import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 public class MainActivity extends ActionBarActivity {
@@ -70,8 +69,8 @@ public class MainActivity extends ActionBarActivity {
         welcomeDialogManager.showDialogIfNeeded();
     }
 
-    public void onEventMainThread(SearchResult event) {
-        repoAdapter.reloadData(event.getRepos());
+    public void onEventMainThread(RepoResponse event) {
+        repoAdapter.reloadData(event.getItems());
         listView.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
     }
@@ -109,21 +108,9 @@ public class MainActivity extends ActionBarActivity {
         reload.setVisibility(View.GONE);
         listView.setVisibility(View.GONE);
 
-        String queryString = query.getText().toString();
-        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
-            @Override public SearchResult apply(String query) {
-                return new SearchResult(service.listRepos(query).getItems());
-            }
-        }, new BiFunction<String, Throwable, Object>() {
-            @Override public Object apply(String s, Throwable throwable) {
-                return new SearchError(throwable);
-            }
-        });
-//        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
-//            @Override public SearchResult apply(String query) {
-//                return new SearchResult(service.listRepos(query).getItems());
-//            }
-//        }, SearchError.class);
+        backgroundExecutor.executeInBackground(query.getText().toString(),
+                service::listRepos,
+                SearchError::new);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
