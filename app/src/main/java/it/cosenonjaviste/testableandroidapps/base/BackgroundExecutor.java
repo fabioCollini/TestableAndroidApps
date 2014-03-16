@@ -16,7 +16,7 @@ public class BackgroundExecutor {
 
     private ExecutorService executor = Executors.newCachedThreadPool();
 
-    public <T> void executeInBackground(final T event, final Class<?> errorClass, final Function<T, ?> action) {
+    public <T> void executeInBackground(final T event, final Function<T, ?> action, final Class<?> errorClass) {
         executor.execute(new Runnable() {
             @Override public void run() {
                 try {
@@ -34,6 +34,21 @@ public class BackgroundExecutor {
                                 + ")", e);
                     }
 
+                }
+            }
+        });
+    }
+
+    public <T> void executeInBackground(final T event, final Function<T, ?> action, final BiFunction<T, Throwable, ?> errorEventCreator) {
+        executor.execute(new Runnable() {
+            @Override public void run() {
+                try {
+                    Object result = action.apply(event);
+                    if (result != null) {
+                        eventBus.post(result);
+                    }
+                } catch (Throwable t) {
+                    eventBus.post(errorEventCreator.apply(event, t));
                 }
             }
         });

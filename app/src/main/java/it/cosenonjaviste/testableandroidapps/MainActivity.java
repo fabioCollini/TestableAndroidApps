@@ -22,6 +22,7 @@ import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
+import it.cosenonjaviste.testableandroidapps.base.BiFunction;
 import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
@@ -109,11 +110,20 @@ public class MainActivity extends ActionBarActivity {
         listView.setVisibility(View.GONE);
 
         String queryString = query.getText().toString();
-        backgroundExecutor.executeInBackground(queryString, SearchError.class, new Function<String, SearchResult>() {
+        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
             @Override public SearchResult apply(String query) {
                 return new SearchResult(service.listRepos(query).getItems());
             }
+        }, new BiFunction<String, Throwable, Object>() {
+            @Override public Object apply(String s, Throwable throwable) {
+                return new SearchError(throwable);
+            }
         });
+//        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
+//            @Override public SearchResult apply(String query) {
+//                return new SearchResult(service.listRepos(query).getItems());
+//            }
+//        }, SearchError.class);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
