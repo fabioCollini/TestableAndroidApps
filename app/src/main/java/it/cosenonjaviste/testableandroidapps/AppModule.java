@@ -2,11 +2,13 @@ package it.cosenonjaviste.testableandroidapps;
 
 import android.app.Application;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import de.greenrobot.event.EventBus;
+import it.cosenonjaviste.testableandroidapps.base.MainThreadBus;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
@@ -42,7 +44,7 @@ public class AppModule {
     }
 
     @Provides @Singleton
-    public EventBus provideEventBus() {
-        return new EventBus();
+    public Bus provideEventBus() {
+        return new MainThreadBus();
     }
 }

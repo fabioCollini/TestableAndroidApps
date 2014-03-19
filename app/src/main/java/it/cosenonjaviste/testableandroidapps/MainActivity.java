@@ -8,6 +8,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -19,7 +22,6 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
-import de.greenrobot.event.EventBus;
 import icepick.Icepick;
 import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
 import it.cosenonjaviste.testableandroidapps.base.BiFunction;
@@ -41,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    @Inject EventBus eventBus;
+    @Inject Bus eventBus;
 
     @Inject GitHubService service;
 
@@ -70,13 +72,13 @@ public class MainActivity extends ActionBarActivity {
         welcomeDialogManager.showDialogIfNeeded();
     }
 
-    public void onEventMainThread(SearchResult event) {
+    @Subscribe public void reloadData(SearchResult event) {
         repoAdapter.reloadData(event.getRepos());
         listView.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
     }
 
-    public void onEventMainThread(SearchError event) {
+    @Subscribe public void onSearchError(SearchError event) {
         reload.setVisibility(View.VISIBLE);
         progress.setVisibility(View.GONE);
     }

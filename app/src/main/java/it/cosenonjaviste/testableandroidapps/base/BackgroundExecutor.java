@@ -1,5 +1,7 @@
 package it.cosenonjaviste.testableandroidapps.base;
 
+import com.squareup.otto.Bus;
+
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -7,12 +9,10 @@ import java.util.concurrent.Executors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
-
 @Singleton
 public class BackgroundExecutor {
 
-    @Inject EventBus eventBus;
+    @Inject Bus eventBus;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
 
