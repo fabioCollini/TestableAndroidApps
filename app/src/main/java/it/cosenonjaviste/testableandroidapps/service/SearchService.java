@@ -7,8 +7,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import javax.inject.Inject;
 
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import org.parceler.Parcels;
+
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import retrofit.RestAdapter;
 
 public class SearchService extends IntentService {
 
@@ -33,7 +36,7 @@ public class SearchService extends IntentService {
         Intent resIntent = new Intent(EVENT_NAME);
         try {
             RepoResponse repos = service.listRepos(intent.getStringExtra(QUERY));
-            resIntent.putParcelableArrayListExtra(REPOS, repos.getItems());
+            resIntent.putExtra(REPOS, Parcels.wrap(repos));
         } catch (Throwable t) {
             resIntent.putExtra(ERROR, t.getMessage());
         }
