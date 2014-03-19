@@ -14,12 +14,12 @@ public class MainActivityTest extends BaseActivityTest {
     }
 
     public void setUp() throws Exception {
-        super.setUp();
         ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
             @Override public ObjectGraph create() {
                 return ObjectGraph.create(new AppModule(), new WelcomeDialogManagerTestModule());
             }
         });
+        super.setUp();
     }
 
     public void testSearch() {
