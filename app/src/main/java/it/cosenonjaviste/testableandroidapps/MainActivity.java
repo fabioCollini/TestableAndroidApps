@@ -1,7 +1,12 @@
 package it.cosenonjaviste.testableandroidapps;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -10,6 +15,7 @@ import android.widget.ListView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -23,12 +29,9 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import icepick.Icepick;
-import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
-import it.cosenonjaviste.testableandroidapps.base.BiFunction;
-import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
-import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 public class MainActivity extends ActionBarActivity {
@@ -63,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
 
         repoAdapter = new RepoAdapter(this);
-        Icepick.restoreInstanceState(repoAdapter, savedInstanceState);
+        repoAdapter.loadFromBundle(savedInstanceState);
 
         listView.setAdapter(repoAdapter);
 
@@ -90,7 +93,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Icepick.saveInstanceState(repoAdapter, outState);
+        repoAdapter.saveInBundle(outState);
     }
 
     @Override protected void onDestroy() {
