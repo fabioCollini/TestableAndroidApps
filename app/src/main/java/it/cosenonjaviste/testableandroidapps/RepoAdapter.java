@@ -1,6 +1,8 @@
 package it.cosenonjaviste.testableandroidapps;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +12,20 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.parceler.Parcels;
+
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import icepick.Icicle;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 
 public class RepoAdapter extends BaseAdapter {
 
-    @Icicle ArrayList<Repo> repos = new ArrayList<Repo>();
+    public static final String REPOS = "repos";
+
+    private ArrayList<Repo> repos = new ArrayList<Repo>();
 
     private Context context;
 
@@ -56,6 +62,18 @@ public class RepoAdapter extends BaseAdapter {
     public void reloadData(ArrayList<Repo> repos) {
         this.repos = repos;
         notifyDataSetChanged();
+    }
+
+    public void loadFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            Parcelable parcelable = savedInstanceState.getParcelable(REPOS);
+            RepoResponse response = Parcels.unwrap(parcelable);
+            repos = response.getItems();
+        }
+    }
+
+    public void saveInBundle(Bundle outState) {
+        outState.putParcelable(REPOS, Parcels.wrap(new RepoResponse(repos)));
     }
 
     static class RowWrapper {
