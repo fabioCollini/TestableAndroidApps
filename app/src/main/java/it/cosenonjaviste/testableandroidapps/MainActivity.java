@@ -48,6 +48,8 @@ public class MainActivity extends ActionBarActivity {
 
     @Inject BackgroundExecutor backgroundExecutor;
 
+    @Inject ShareHelper shareHelper;
+
     private RepoAdapter repoAdapter;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        ShareHelper.share(this, repo.getName(), repo.getName() + " " + repo.getUrl());
+        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
