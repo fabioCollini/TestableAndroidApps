@@ -17,6 +17,10 @@ public class MainActivityTest extends BaseActivityTest<MainActivity> {
         super(MainActivity.class);
     }
 
+    @Override protected Object[] getTestModules() {
+        return new Object[]{new WelcomeDialogManagerTestModule()};
+    }
+
     public void testSearch() {
         onView(withId(R.id.query))
                 .perform(ViewActions.typeText("abc"));
