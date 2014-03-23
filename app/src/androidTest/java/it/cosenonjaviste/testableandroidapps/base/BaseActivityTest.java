@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.test.ActivityInstrumentationTestCase2;
 
+import org.mockito.MockitoAnnotations;
+
 import dagger.ObjectGraph;
 import it.cosenonjaviste.testableandroidapps.AppModule;
 
@@ -17,6 +19,9 @@ public class BaseActivityTest<T extends Activity> extends ActivityInstrumentatio
 
     public void setUp() throws Exception {
         super.setUp();
+        setupDexmaker();
+
+        MockitoAnnotations.initMocks(this);
 
         final EspressoExecutor espressoExecutor = EspressoExecutor.newCachedThreadPool();
 
@@ -39,5 +44,18 @@ public class BaseActivityTest<T extends Activity> extends ActivityInstrumentatio
 
     protected Object[] getTestModules() {
         return new Object[0];
+    }
+
+    /**
+     * Workaround for Mockito and JB-MR2 incompatibility to avoid
+     * java.lang.IllegalArgumentException: dexcache == null
+     *
+     * @see <a href="https://code.google.com/p/dexmaker/issues/detail?id=2">
+     * https://code.google.com/p/dexmaker/issues/detail?id=2</a>
+     */
+    private void setupDexmaker() {
+        // Explicitly set the Dexmaker cache, so tests that use mockito work
+        final String dexCache = getInstrumentation().getTargetContext().getCacheDir().getPath();
+        System.setProperty("dexmaker.dexcache", dexCache);
     }
 }

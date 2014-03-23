@@ -45,7 +45,16 @@ dependencies {
     compile 'com.squareup.dagger:dagger-compiler:1.2.1'
     compile 'com.squareup.dagger:dagger:1.2.1'
 
+    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.0') {
+        exclude group:'org.hamcrest', module:'hamcrest-core'
+    }
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.0.5'
+
     androidTestCompile('com.jakewharton.espresso:espresso:1.1-r2') {
         exclude group: 'com.squareup.dagger'
+        exclude group: 'org.hamcrest', module:'hamcrest-core'
     }
 }
