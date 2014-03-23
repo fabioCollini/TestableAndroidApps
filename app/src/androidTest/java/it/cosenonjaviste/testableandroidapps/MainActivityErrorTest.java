@@ -1,50 +1,45 @@
 package it.cosenonjaviste.testableandroidapps;
 
-import android.app.Application;
 import android.app.Instrumentation;
 import android.content.res.Resources;
-import android.view.View;
-import android.widget.ListView;
 
-import dagger.ObjectGraph;
+import com.google.android.apps.common.testing.ui.espresso.action.ViewActions;
+
 import it.cosenonjaviste.testableandroidapps.base.BaseActivityTest;
-import it.cosenonjaviste.testableandroidapps.base.ObjectGraphCreator;
-import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import it.cosenonjaviste.testableandroidapps.model.Repo;
 
-public class MainActivityErrorTest extends BaseActivityTest {
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.*;
+import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+
+public class MainActivityErrorTest extends BaseActivityTest<MainActivity> {
 
     public MainActivityErrorTest() {
         super(MainActivity.class);
     }
 
-    public void setUp() throws Exception {
+    @Override protected Object[] getTestModules() {
         Instrumentation instrumentation = getInstrumentation();
         final Resources resources = instrumentation.getContext().getResources();
-        ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
-            @Override public ObjectGraph create(Application app) {
-                return ObjectGraph.create(new AppModule(app), new WelcomeDialogManagerTestModule(), new GitHubServiceErrorTestModule(resources));
-            }
-        });
-        super.setUp();
+
+        return new Object[]{new WelcomeDialogManagerTestModule(),
+                new GitHubServiceErrorTestModule(resources)
+        };
     }
 
     public void testSearch() {
-        solo.typeText(solo.getEditText(0), "abc");
+        onView(withId(R.id.query))
+                .perform(ViewActions.typeText("abc"));
 
-        solo.clickOnImageButton(0);
+        onView(withId(R.id.search))
+                .perform(click());
 
-        View reloadButton = solo.getView(R.id.reload);
+        onView(withId(R.id.reload))
+                .perform(click());
 
-        waitForVisibleView(reloadButton, 5000);
-
-        solo.clickOnView(reloadButton);
-
-        ListView list = (ListView) solo.getView(R.id.list);
-
-        waitForVisibleView(list, 5000);
-
-        assertEquals(4, list.getAdapter().getCount());
-
-        solo.clickInList(3);
+        onData(is(instanceOf(Repo.class))).atPosition(3)
+                .perform(click());
     }
 }
