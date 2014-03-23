@@ -3,8 +3,7 @@ package it.cosenonjaviste.testableandroidapps.base;
 import com.squareup.otto.Bus;
 
 import java.lang.reflect.Constructor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -14,7 +13,7 @@ public class BackgroundExecutor {
 
     @Inject Bus eventBus;
 
-    private ExecutorService executor = Executors.newCachedThreadPool();
+    @Inject Executor executor;
 
     public <T> void executeInBackground(final T event, final Function<T, ?> action, final Class<?> errorClass) {
         executor.execute(new Runnable() {
