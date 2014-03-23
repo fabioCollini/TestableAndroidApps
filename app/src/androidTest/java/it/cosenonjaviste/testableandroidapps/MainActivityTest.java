@@ -1,8 +1,15 @@
 package it.cosenonjaviste.testableandroidapps;
 
-import android.widget.ListView;
+import com.google.android.apps.common.testing.ui.espresso.action.ViewActions;
 
 import it.cosenonjaviste.testableandroidapps.base.BaseActivityTest;
+import it.cosenonjaviste.testableandroidapps.model.Repo;
+
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.*;
+import static com.google.android.apps.common.testing.ui.espresso.action.ViewActions.click;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 
 public class MainActivityTest extends BaseActivityTest<MainActivity> {
 
@@ -11,16 +18,13 @@ public class MainActivityTest extends BaseActivityTest<MainActivity> {
     }
 
     public void testSearch() {
-        solo.typeText(solo.getEditText(0), "abc");
+        onView(withId(R.id.query))
+                .perform(ViewActions.typeText("abc"));
 
-        solo.clickOnImageButton(0);
+        onView(withId(R.id.search))
+                .perform(click());
 
-        ListView list = (ListView) solo.getView(R.id.list);
-
-        waitForVisibleView(list, 5000);
-
-        assertEquals(30, list.getAdapter().getCount());
-
-        solo.clickInList(3);
+        onData(is(instanceOf(Repo.class))).atPosition(3)
+                .perform(click());
     }
 }
