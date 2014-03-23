@@ -1,35 +1,31 @@
 package it.cosenonjaviste.testableandroidapps;
 
-import android.app.Application;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
-import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.BaseActivityTest;
-import it.cosenonjaviste.testableandroidapps.base.ObjectGraphCreator;
-import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 
-public class WelcomeDialogManagerMorningTest extends BaseActivityTest {
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.onView;
+import static com.google.android.apps.common.testing.ui.espresso.assertion.ViewAssertions.matches;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.isDisplayed;
+import static com.google.android.apps.common.testing.ui.espresso.matcher.ViewMatchers.withText;
+
+public class WelcomeDialogManagerMorningTest extends BaseActivityTest<MainActivity> {
 
     public WelcomeDialogManagerMorningTest() {
         super(MainActivity.class);
     }
 
-    public void setUp() throws Exception {
-        ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
-            @Override public ObjectGraph create(Application app) {
-                return ObjectGraph.create(new AppModule(app), new TestModule());
-            }
-        });
-        super.setUp();
+    @Override protected Object[] getTestModules() {
+        return new Object[]{new TestModule()};
     }
 
     public void testMorning() {
-        assertTrue(solo.waitForDialogToOpen(1000));
+        onView(withText(R.string.welcome))
+                .check(matches(isDisplayed()));
     }
 
     @Module(overrides = true, library = true)

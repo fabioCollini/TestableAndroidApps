@@ -1,6 +1,7 @@
 package it.cosenonjaviste.testableandroidapps.base;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -20,10 +21,10 @@ public class BaseActivityTest<T extends Activity> extends ActivityInstrumentatio
         super.setUp();
 
         ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
-            @Override public ObjectGraph create() {
+            @Override public ObjectGraph create(Application app) {
                 Object[] testModules = getTestModules();
                 Object[] modules = new Object[testModules.length + 1];
-                modules[0] = new AppModule();
+                modules[0] = new AppModule(app);
                 System.arraycopy(testModules, 0, modules, 1, testModules.length);
                 return ObjectGraph.create(modules);
             }
