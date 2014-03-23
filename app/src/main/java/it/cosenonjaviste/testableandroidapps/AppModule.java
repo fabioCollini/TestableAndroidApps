@@ -4,6 +4,9 @@ import android.app.Application;
 
 import com.squareup.otto.Bus;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -46,5 +49,10 @@ public class AppModule {
     @Provides @Singleton
     public Bus provideEventBus() {
         return new MainThreadBus();
+    }
+
+    @Provides @Singleton
+    public Executor provideExecutor() {
+        return Executors.newCachedThreadPool();
     }
 }

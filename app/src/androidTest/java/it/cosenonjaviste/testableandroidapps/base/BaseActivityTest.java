@@ -2,14 +2,12 @@ package it.cosenonjaviste.testableandroidapps.base;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
-
-import com.google.android.apps.common.testing.ui.espresso.Espresso;
 
 import dagger.ObjectGraph;
 import it.cosenonjaviste.testableandroidapps.AppModule;
-import it.cosenonjaviste.testableandroidapps.service.SearchService;
+
+import static com.google.android.apps.common.testing.ui.espresso.Espresso.*;
 
 public class BaseActivityTest<T extends Activity> extends ActivityInstrumentationTestCase2<T> {
 
@@ -20,12 +18,15 @@ public class BaseActivityTest<T extends Activity> extends ActivityInstrumentatio
     public void setUp() throws Exception {
         super.setUp();
 
+        final EspressoExecutor espressoExecutor = EspressoExecutor.newCachedThreadPool();
+
         ObjectGraphHolder.forceObjectGraphCreator(new ObjectGraphCreator() {
             @Override public ObjectGraph create(Application app) {
                 Object[] testModules = getTestModules();
-                Object[] modules = new Object[testModules.length + 1];
+                Object[] modules = new Object[testModules.length + 2];
                 modules[0] = new AppModule(app);
-                System.arraycopy(testModules, 0, modules, 1, testModules.length);
+                modules[1] = new EspressoExecutorTestModule(espressoExecutor);
+                System.arraycopy(testModules, 0, modules, 2, testModules.length);
                 return ObjectGraph.create(modules);
             }
         });
@@ -33,9 +34,7 @@ public class BaseActivityTest<T extends Activity> extends ActivityInstrumentatio
         // Espresso will not launch our activity for us, we must launch it via getActivity().
         getActivity();
 
-        Context context = getInstrumentation().getTargetContext();
-        IntentServiceIdlingResource idlingResource = new IntentServiceIdlingResource(context, SearchService.class);
-        Espresso.registerIdlingResources(idlingResource);
+        registerIdlingResources(espressoExecutor);
     }
 
     protected Object[] getTestModules() {
