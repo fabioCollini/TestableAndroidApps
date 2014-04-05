@@ -28,7 +28,7 @@ public class MainActivityTest extends BaseActivityTest<MainActivity> {
         onView(withId(R.id.search))
                 .perform(click());
 
-        onData(is(instanceOf(Repo.class))).atPosition(3)
+        onData(is(instanceOf(Repo.class))).inAdapterView(withId(R.id.list)).atPosition(3)
                 .perform(click());
     }
 }

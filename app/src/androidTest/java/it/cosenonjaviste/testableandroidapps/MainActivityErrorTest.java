@@ -46,7 +46,7 @@ public class MainActivityErrorTest extends BaseActivityTest<MainActivity> {
         onView(withId(R.id.reload))
                 .perform(click());
 
-        onData(is(instanceOf(Repo.class))).atPosition(3)
+        onData(is(instanceOf(Repo.class))).inAdapterView(withId(R.id.list)).atPosition(3)
                 .perform(click());
 
         verify(shareHelper).share(anyString(), anyString());
