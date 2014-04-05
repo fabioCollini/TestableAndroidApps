@@ -32,4 +32,4 @@ before_script:
 
 
 script:
-  - ./gradlew clean connectedAndroidTest
+  - ./gradlew connectedAndroidTest
