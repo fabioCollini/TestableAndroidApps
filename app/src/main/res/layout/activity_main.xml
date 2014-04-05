@@ -23,11 +23,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/search"
-        android:gravity="center">
+        android:gravity="center_horizontal">
 
         <Button
             android:id="@+id/reload"
             android:text="@string/reload"
+            android:layout_marginTop="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"/>
