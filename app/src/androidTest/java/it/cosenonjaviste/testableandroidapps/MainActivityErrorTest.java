@@ -46,6 +46,8 @@ public class MainActivityErrorTest extends BaseActivityTest<MainActivity> {
         onView(withId(R.id.reload))
                 .perform(click());
 
+        closeSoftKeyboard();
+
         onData(is(instanceOf(Repo.class))).inAdapterView(withId(R.id.list)).atPosition(3)
                 .perform(click());
 
