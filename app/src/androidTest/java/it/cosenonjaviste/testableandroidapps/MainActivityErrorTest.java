@@ -36,6 +36,8 @@ public class MainActivityErrorTest extends BaseActivityTest<MainActivity> {
         onView(withId(R.id.search))
                 .perform(click());
 
+        closeSoftKeyboard();
+
         onView(withId(R.id.reload))
                 .perform(click());
 
