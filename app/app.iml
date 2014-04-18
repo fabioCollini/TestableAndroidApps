@@ -85,14 +85,14 @@
     <orderEntry type="library" exported="" name="transfuse-bootstrap-0.2.9" level="project" />
     <orderEntry type="library" exported="" name="transfuse-support-0.2.9" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="jsr305-1.3.9" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-19.0.1" level="project" />
     <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
     <orderEntry type="library" exported="" name="transfuse-api-0.2.9" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-19.1.0" level="project" />
     <orderEntry type="library" exported="" name="butterknife-4.0.1" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.4.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-19.1.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-1.1-r2" level="project" />
     <orderEntry type="library" exported="" name="parceler-api-0.2.7" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-19.0.1" level="project" />
     <orderEntry type="library" exported="" name="commons-collections-3.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-runtime-1.1-r2" level="project" />
