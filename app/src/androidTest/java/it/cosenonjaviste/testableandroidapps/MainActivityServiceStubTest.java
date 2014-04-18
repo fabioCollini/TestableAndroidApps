@@ -34,6 +34,8 @@ public class MainActivityServiceStubTest extends BaseActivityTest<MainActivity> 
         onView(withId(R.id.search))
                 .perform(click());
 
+        closeSoftKeyboard();
+
         onData(is(instanceOf(Repo.class))).atPosition(3)
                 .perform(click());
     }
