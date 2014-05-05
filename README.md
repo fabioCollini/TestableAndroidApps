@@ -1,3 +1,4 @@
+[![Build Status](https://snap-ci.com/fabioCollini/TestableAndroidApps/branch/master/build_image)](https://snap-ci.com/fabioCollini/TestableAndroidApps/branch/master)
 Testable Android Apps
 ===================
 
