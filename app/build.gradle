@@ -7,8 +7,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.9.+'
-        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.9.+'
+        classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+'
     }
 }
 
@@ -29,8 +28,8 @@ android {
     }
     buildTypes {
         release {
-            runProguard true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            runProguard false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
 
@@ -50,13 +49,13 @@ dependencies {
     compile project(':model')
     compile 'com.android.support:appcompat-v7:+'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    compile 'com.jakewharton:butterknife:4.0.+'
+    compile 'com.jakewharton:butterknife:5.0.+'
     compile 'com.squareup.picasso:picasso:2.2.0'
 
     compile 'com.squareup.dagger:dagger-compiler:1.2.1'
     compile 'com.squareup.dagger:dagger:1.2.1'
 
-    androidTestCompile('com.jakewharton.espresso:espresso:1.1-r2') {
+    androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
         exclude group: 'com.squareup.dagger'
     }
 }
