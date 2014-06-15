@@ -2,6 +2,7 @@ package it.cosenonjaviste.testableandroidapps;
 
 import android.app.Application;
 
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.otto.Bus;
 
 import java.util.concurrent.Executor;
@@ -18,6 +19,8 @@ import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
+import retrofit.client.Client;
+import retrofit.client.OkClient;
 
 @Module(injects = {}, library = true)
 public class AppModule {
@@ -39,9 +42,15 @@ public class AppModule {
     }
 
     @Provides @Singleton
-    public GitHubService provideGitHubService() {
+    public Client provideOkHttpClient() {
+        return new OkClient(new OkHttpClient());
+    }
+
+    @Provides @Singleton
+    public GitHubService provideGitHubService(Client client) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
+                .setClient(client)
                 .build();
         return restAdapter.create(GitHubService.class);
     }
