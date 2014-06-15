@@ -24,7 +24,7 @@ public class MainActivityServiceStubTest extends BaseActivityTest<MainActivity> 
         Instrumentation instrumentation = getInstrumentation();
         final Resources resources = instrumentation.getContext().getResources();
         return new Object[]{new WelcomeDialogManagerTestModule(),
-                new GitHubServiceTestModule(resources)};
+                new ClientStubTestModule(resources)};
     }
 
     public void testSearch() {
@@ -36,7 +36,7 @@ public class MainActivityServiceStubTest extends BaseActivityTest<MainActivity> 
 
         closeSoftKeyboard();
 
-        onData(is(instanceOf(Repo.class))).atPosition(3)
+        onData(is(instanceOf(Repo.class))).inAdapterView(withId(R.id.list)).atPosition(3)
                 .perform(click());
     }
 }
