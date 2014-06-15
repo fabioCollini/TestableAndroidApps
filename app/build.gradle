@@ -17,7 +17,7 @@ apply plugin: 'android'
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.3'
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         minSdkVersion 8
@@ -27,6 +27,10 @@ android {
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+
         release {
             runProguard false
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
@@ -50,12 +54,29 @@ dependencies {
     compile 'com.android.support:appcompat-v7:+'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile 'com.jakewharton:butterknife:5.0.+'
-    compile 'com.squareup.picasso:picasso:2.2.0'
+    compile 'com.squareup.picasso:picasso:2.3.+'
 
     compile 'com.squareup.dagger:dagger-compiler:1.2.1'
     compile 'com.squareup.dagger:dagger:1.2.1'
 
     androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
         exclude group: 'com.squareup.dagger'
+    }
+    compile 'com.squareup.okhttp:okhttp:1.6.+'
+    compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
+
+    compile 'com.squareup.dagger:dagger-compiler:1.2.1'
+    compile 'com.squareup.dagger:dagger:1.2.1'
+
+    androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
+    androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.0') {
+        exclude group:'org.hamcrest', module:'hamcrest-core'
+    }
+    androidTestCompile 'org.mockito:mockito-core:1.9.5'
+    androidTestCompile 'com.squareup.spoon:spoon-client:1.0.5'
+
+    androidTestCompile('com.jakewharton.espresso:espresso:1.1-r3') {
+        exclude group: 'com.squareup.dagger'
+        exclude group: 'org.hamcrest', module:'hamcrest-core'
     }
 }
