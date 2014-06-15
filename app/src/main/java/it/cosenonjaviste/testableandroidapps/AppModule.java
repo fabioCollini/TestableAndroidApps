@@ -2,17 +2,14 @@ package it.cosenonjaviste.testableandroidapps;
 
 import android.app.Application;
 
-import com.squareup.otto.Bus;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import com.squareup.okhttp.OkHttpClient;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import it.cosenonjaviste.testableandroidapps.base.MainThreadBus;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
+import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
@@ -21,7 +18,7 @@ import retrofit.RestAdapter;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
 
-@Module(injects = {}, library = true)
+@Module(injects = {MainActivity.class, SearchService.class}, library = true)
 public class AppModule {
 
     private Application application;
@@ -49,6 +46,7 @@ public class AppModule {
     public GitHubService provideGitHubService(Client client) {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
+                .setClient(client)
                 .build();
         return restAdapter.create(GitHubService.class);
     }
