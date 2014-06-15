@@ -32,7 +32,7 @@ public class MainActivityErrorTest extends BaseActivityTest<MainActivity> {
         final Resources resources = instrumentation.getContext().getResources();
 
         return new Object[]{new WelcomeDialogManagerTestModule(),
-                new GitHubServiceErrorTestModule(resources),
+                new ClientErrorStubTestModule(resources),
                 new ShareHelperTestModule(shareHelper)};
     }
 

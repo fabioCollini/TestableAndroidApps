@@ -31,7 +31,7 @@ public class MainActivityServiceStubTest extends BaseActivityTest<MainActivity> 
         Instrumentation instrumentation = getInstrumentation();
         final Resources resources = instrumentation.getContext().getResources();
         return new Object[]{new WelcomeDialogManagerTestModule(),
-                new GitHubServiceTestModule(resources),
+                new ClientStubTestModule(resources),
                 new ShareHelperTestModule(shareHelper)};
     }
 
