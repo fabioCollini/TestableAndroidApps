@@ -7,4 +7,5 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.6.+'
     compile 'org.parceler:parceler:0.2.9'
     compile 'org.parceler:parceler-api:0.2.9'
+    compile 'com.netflix.rxjava:rxjava-android:0.19.1'
 }

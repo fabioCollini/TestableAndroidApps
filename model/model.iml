@@ -6,6 +6,11 @@
         <option name="GRADLE_PROJECT_PATH" value=":model" />
       </configuration>
     </facet>
+    <facet type="java-gradle" name="Java-Gradle">
+      <configuration>
+        <option name="BUILD_FOLDER_PATH" />
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/build/classes/main" />
@@ -25,6 +30,7 @@
     <orderEntry type="library" exported="" name="retrofit-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="parceler-0.2.9" level="project" />
     <orderEntry type="library" exported="" name="parceler-api-0.2.9" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-android-0.19.1" level="project" />
     <orderEntry type="library" exported="" name="commons-logging-1.1.1" level="project" />
     <orderEntry type="library" exported="" name="httpcore-4.0.1" level="project" />
     <orderEntry type="library" exported="" name="commons-codec-1.3" level="project" />
@@ -46,6 +52,7 @@
     <orderEntry type="library" exported="" name="commons-beanutils-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="transfuse-core-0.2.10" level="project" />
     <orderEntry type="library" exported="" name="transfuse-bootstrap-0.2.10" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-core-0.19.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.10" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.1" level="project" />
   </component>

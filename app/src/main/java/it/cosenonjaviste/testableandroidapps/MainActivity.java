@@ -23,12 +23,16 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
-import it.cosenonjaviste.testableandroidapps.base.BiFunction;
-import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -113,15 +117,43 @@ public class MainActivity extends ActionBarActivity {
         listView.setVisibility(View.GONE);
 
         String queryString = query.getText().toString();
-        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
-            @Override public SearchResult apply(String query) {
-                return new SearchResult(service.listRepos(query).getItems());
-            }
-        }, new BiFunction<String, Throwable, Object>() {
-            @Override public Object apply(String s, Throwable throwable) {
-                return new SearchError(throwable);
-            }
-        });
+
+        service.listReposRx(queryString)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .flatMap(new Func1<RepoResponse, Observable<Repo>>() {
+                    @Override public Observable<Repo> call(RepoResponse repoResponse) {
+                        return Observable.from(repoResponse.getItems());
+                    }
+                })
+                .subscribe(new Observer<Repo>() {
+                    @Override public void onCompleted() {
+                        System.out.println("completed");
+                    }
+
+                    @Override public void onError(Throwable e) {
+                        reload.setVisibility(View.VISIBLE);
+                        progress.setVisibility(View.GONE);
+                    }
+
+                    @Override public void onNext(Repo repo) {
+                        System.out.println("next" + repo);
+        //                        repoAdapter.reloadData(event.getRepos());
+        //                        listView.setVisibility(View.VISIBLE);
+        //                        progress.setVisibility(View.GONE);
+                    }
+                });
+
+//        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
+//            @Override public SearchResult apply(String query) {
+//                return new SearchResult(service.listRepos(query).getItems());
+//            }
+//        }, new BiFunction<String, Throwable, Object>() {
+//            @Override public Object apply(String s, Throwable throwable) {
+//                return new SearchError(throwable);
+//            }
+//        });
+
 //        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
 //            @Override public SearchResult apply(String query) {
 //                return new SearchResult(service.listRepos(query).getItems());
