@@ -1,12 +1,11 @@
 package it.cosenonjaviste.testableandroidapps;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,49 +17,64 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
-public class RepoAdapter extends BaseAdapter {
-
+public class RepoAdapter extends RecyclerView.Adapter<RepoAdapter.ViewHolder> {
     public static final String REPOS = "repos";
 
     private ArrayList<Repo> repos = new ArrayList<Repo>();
 
-    private Context context;
-
-    public RepoAdapter(Context context) {
-        this.context = context;
-    }
-
-    @Override public int getCount() {
-        return repos.size();
-    }
-
-    @Override public Repo getItem(int position) {
-        return repos.get(position);
+    public RepoAdapter() {
+        setHasStableIds(true);
     }
 
     @Override public long getItemId(int position) {
-        return getItem(position).getId();
+        return repos.get(position).getId();
     }
 
-    @Override public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.repo_row, parent, false);
-            RowWrapper rowWrapper = new RowWrapper();
-            ButterKnife.inject(rowWrapper, convertView);
-            convertView.setTag(rowWrapper);
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        @InjectView(R.id.image) ImageView image;
+        @InjectView(R.id.text) TextView text;
+        private Repo repo;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.inject(this, itemView);
         }
-        RowWrapper rowWrapper = (RowWrapper) convertView.getTag();
-        Repo repo = getItem(position);
-        rowWrapper.text.setText(repo.toString());
-        Picasso.with(context).load(repo.getOwner().getAvatar()).into(rowWrapper.image);
-        return convertView;
+
+        public void popupate(Repo repo) {
+            this.repo = repo;
+            text.setText(repo.toString());
+            Picasso.with(image.getContext()).load(repo.getOwner().getAvatar()).into(image);
+        }
+
+        @OnClick(R.id.layout) void onClick(View v) {
+            ShareHelper.share(v.getContext(), repo.getName(), repo.getName() + " " + repo.getUrl());
+        }
     }
 
-    public void reloadData(ArrayList<Repo> repos) {
-        this.repos = repos;
+    @Override
+    public RepoAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.repo_row, parent, false);
+        return new ViewHolder(v);
+    }
+
+    @Override
+    public void onBindViewHolder(ViewHolder rowWrapper, int position) {
+        Repo repo = repos.get(position);
+        rowWrapper.popupate(repo);
+    }
+
+    @Override
+    public int getItemCount() {
+        return repos.size();
+    }
+
+    public void reloadData(ArrayList<Repo> items) {
+        this.repos = items;
         notifyDataSetChanged();
     }
 
@@ -76,8 +90,4 @@ public class RepoAdapter extends BaseAdapter {
         outState.putParcelable(REPOS, Parcels.wrap(new RepoResponse(repos)));
     }
 
-    static class RowWrapper {
-        @InjectView(R.id.image) ImageView image;
-        @InjectView(R.id.text) TextView text;
-    }
 }
