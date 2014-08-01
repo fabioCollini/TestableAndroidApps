@@ -96,7 +96,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="parceler-api-0.2.9" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="spoon-client-1.0.5" level="project" />
-    <orderEntry type="library" exported="" name="otto-1.3.4" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="espresso-runner-runtime-1.1-r3" level="project" />
     <orderEntry type="library" exported="" name="codemodel-2.6" level="project" />
     <orderEntry type="library" exported="" name="transfuse-bootstrap-0.2.10" level="project" />
