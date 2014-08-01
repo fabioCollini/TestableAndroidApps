@@ -3,7 +3,6 @@ package it.cosenonjaviste.testableandroidapps;
 import android.app.Application;
 
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.otto.Bus;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -12,7 +11,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import it.cosenonjaviste.testableandroidapps.base.MainThreadBus;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
@@ -52,12 +50,10 @@ public class AppModule {
                 .setEndpoint("https://api.github.com")
                 .setClient(client)
                 .build();
+        if (BuildConfig.DEBUG) {
+            restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
+        }
         return restAdapter.create(GitHubService.class);
-    }
-
-    @Provides @Singleton
-    public Bus provideEventBus() {
-        return new MainThreadBus();
     }
 
     @Provides @Singleton

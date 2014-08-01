@@ -8,8 +8,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,17 +21,12 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
-import it.cosenonjaviste.testableandroidapps.base.BackgroundExecutor;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
-import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
-import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
-import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import rx.Subscription;
+import rx.android.observables.AndroidObservable;
+import rx.functions.Action1;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -46,15 +40,12 @@ public class MainActivity extends ActionBarActivity {
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    @Inject Bus eventBus;
-
-    @Inject GitHubService service;
-
-    @Inject BackgroundExecutor backgroundExecutor;
+    @Inject RepoService repoService;
 
     @Inject ShareHelper shareHelper;
 
     private RepoAdapter repoAdapter;
+    private Subscription subscription;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,20 +63,7 @@ public class MainActivity extends ActionBarActivity {
 
         listView.setAdapter(repoAdapter);
 
-        eventBus.register(this);
-
         welcomeDialogManager.showDialogIfNeeded();
-    }
-
-    @Subscribe public void reloadData(SearchResult event) {
-        repoAdapter.reloadData(event.getRepos());
-        listView.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
-    }
-
-    @Subscribe public void onSearchError(SearchError event) {
-        reload.setVisibility(View.VISIBLE);
-        progress.setVisibility(View.GONE);
     }
 
     @OnItemClick(R.id.list) void shareItem(int position) {
@@ -99,7 +77,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override protected void onDestroy() {
-        eventBus.unregister(this);
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
         super.onDestroy();
     }
 
@@ -118,47 +98,23 @@ public class MainActivity extends ActionBarActivity {
 
         String queryString = query.getText().toString();
 
-        service.listReposRx(queryString)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(new Func1<RepoResponse, Observable<Repo>>() {
-                    @Override public Observable<Repo> call(RepoResponse repoResponse) {
-                        return Observable.from(repoResponse.getItems());
-                    }
-                })
-                .subscribe(new Observer<Repo>() {
-                    @Override public void onCompleted() {
-                        System.out.println("completed");
-                    }
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
 
-                    @Override public void onError(Throwable e) {
+        subscription = AndroidObservable.bindActivity(this, repoService.listRepos(queryString))
+                .subscribe(new Action1<List<Repo>>() {
+                    @Override public void call(List<Repo> repos) {
+                        repoAdapter.reloadData(repos);
+                        listView.setVisibility(View.VISIBLE);
+                        progress.setVisibility(View.GONE);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override public void call(Throwable throwable) {
                         reload.setVisibility(View.VISIBLE);
                         progress.setVisibility(View.GONE);
                     }
-
-                    @Override public void onNext(Repo repo) {
-                        System.out.println("next" + repo);
-        //                        repoAdapter.reloadData(event.getRepos());
-        //                        listView.setVisibility(View.VISIBLE);
-        //                        progress.setVisibility(View.GONE);
-                    }
                 });
-
-//        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
-//            @Override public SearchResult apply(String query) {
-//                return new SearchResult(service.listRepos(query).getItems());
-//            }
-//        }, new BiFunction<String, Throwable, Object>() {
-//            @Override public Object apply(String s, Throwable throwable) {
-//                return new SearchError(throwable);
-//            }
-//        });
-
-//        backgroundExecutor.executeInBackground(queryString, new Function<String, SearchResult>() {
-//            @Override public SearchResult apply(String query) {
-//                return new SearchResult(service.listRepos(query).getItems());
-//            }
-//        }, SearchError.class);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)

@@ -15,17 +15,17 @@ import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
-import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 
 public class RepoAdapter extends BaseAdapter {
 
     public static final String REPOS = "repos";
 
-    private ArrayList<Repo> repos = new ArrayList<Repo>();
+    private List<Repo> repos = new ArrayList<Repo>();
 
     private Context context;
 
@@ -59,7 +59,7 @@ public class RepoAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void reloadData(ArrayList<Repo> repos) {
+    public void reloadData(List<Repo> repos) {
         this.repos = repos;
         notifyDataSetChanged();
     }
@@ -67,13 +67,12 @@ public class RepoAdapter extends BaseAdapter {
     public void loadFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             Parcelable parcelable = savedInstanceState.getParcelable(REPOS);
-            RepoResponse response = Parcels.unwrap(parcelable);
-            repos = response.getItems();
+            repos = Parcels.unwrap(parcelable);
         }
     }
 
     public void saveInBundle(Bundle outState) {
-        outState.putParcelable(REPOS, Parcels.wrap(new RepoResponse(repos)));
+        outState.putParcelable(REPOS, Parcels.wrap(repos));
     }
 
     static class RowWrapper {

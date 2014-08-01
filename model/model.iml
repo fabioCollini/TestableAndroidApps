@@ -27,7 +27,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="android-2.2.1" level="project" />
-    <orderEntry type="library" exported="" name="retrofit-1.6.0" level="project" />
+    <orderEntry type="library" exported="" name="retrofit-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="parceler-0.2.9" level="project" />
     <orderEntry type="library" exported="" name="parceler-api-0.2.9" level="project" />
     <orderEntry type="library" exported="" name="rxjava-android-0.19.1" level="project" />
