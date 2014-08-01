@@ -22,6 +22,11 @@ public class RepoService {
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<RepoResponse, List<Repo>>() {
                     @Override public List<Repo> call(RepoResponse repoResponse) {
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         return repoResponse.getItems();
                     }
                 });

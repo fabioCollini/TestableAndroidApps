@@ -22,11 +22,12 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
+import rx.Observer;
 import rx.Subscription;
 import rx.android.observables.AndroidObservable;
-import rx.functions.Action1;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -45,7 +46,24 @@ public class MainActivity extends ActionBarActivity {
     @Inject ShareHelper shareHelper;
 
     private RepoAdapter repoAdapter;
-    private Subscription subscription;
+
+    private RxRetainedFragment<List<Repo>> fragment;
+
+    private Observer<List<Repo>> observer = new Observer<List<Repo>>() {
+        @Override public void onCompleted() {
+        }
+
+        @Override public void onError(Throwable e) {
+            reload.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+        }
+
+        @Override public void onNext(List<Repo> repos) {
+            repoAdapter.reloadData(repos);
+            listView.setVisibility(View.VISIBLE);
+            progress.setVisibility(View.GONE);
+        }
+    };
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +82,8 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(repoAdapter);
 
         welcomeDialogManager.showDialogIfNeeded();
+
+        fragment = RxRetainedFragment.getFragment(this);
     }
 
     @OnItemClick(R.id.list) void shareItem(int position) {
@@ -76,10 +96,20 @@ public class MainActivity extends ActionBarActivity {
         repoAdapter.saveInBundle(outState);
     }
 
-    @Override protected void onDestroy() {
-        if (subscription != null) {
-            subscription.unsubscribe();
+    @Override protected void onStart() {
+        super.onStart();
+        if (fragment.reconnectObservable(observer)) {
+            showProgress();
         }
+    }
+
+    @Override protected void onStop() {
+        fragment.unsubscribe(true);
+        super.onStop();
+    }
+
+    @Override protected void onDestroy() {
+        fragment.unsubscribe(isChangingConfigurations());
         super.onDestroy();
     }
 
@@ -92,29 +122,17 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
-        progress.setVisibility(View.VISIBLE);
-        reload.setVisibility(View.GONE);
-        listView.setVisibility(View.GONE);
+        showProgress();
 
         String queryString = query.getText().toString();
 
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+        fragment.connectObservable(repoService.listRepos(queryString), observer);
+    }
 
-        subscription = AndroidObservable.bindActivity(this, repoService.listRepos(queryString))
-                .subscribe(new Action1<List<Repo>>() {
-                    @Override public void call(List<Repo> repos) {
-                        repoAdapter.reloadData(repos);
-                        listView.setVisibility(View.VISIBLE);
-                        progress.setVisibility(View.GONE);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override public void call(Throwable throwable) {
-                        reload.setVisibility(View.VISIBLE);
-                        progress.setVisibility(View.GONE);
-                    }
-                });
+    private void showProgress() {
+        progress.setVisibility(View.VISIBLE);
+        reload.setVisibility(View.GONE);
+        listView.setVisibility(View.GONE);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
