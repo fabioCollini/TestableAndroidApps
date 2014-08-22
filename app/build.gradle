@@ -27,10 +27,6 @@ android {
         testInstrumentationRunner "com.google.android.apps.common.testing.testrunner.GoogleInstrumentationTestRunner"
     }
     buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
-
         release {
             runProguard false
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'

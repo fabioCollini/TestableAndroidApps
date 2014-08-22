@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -21,13 +22,13 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
+import it.cosenonjaviste.testableandroidapps.base.EndlessObserver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.observables.AndroidObservable;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -64,6 +65,7 @@ public class MainActivity extends ActionBarActivity {
             progress.setVisibility(View.GONE);
         }
     };
+    private Subscription busSubscription;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +90,8 @@ public class MainActivity extends ActionBarActivity {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
+        repoService.toggleStar(repo);
+//        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -101,10 +104,22 @@ public class MainActivity extends ActionBarActivity {
         if (fragment.reconnectObservable(observer)) {
             showProgress();
         }
+
+        busSubscription = repoService.subscribe(new EndlessObserver<Repo>() {
+            @Override public void onNext(Repo repo) {
+                repoAdapter.notifyDataSetChanged();
+            }
+
+            @Override public void onNextError(Throwable t) {
+                repoAdapter.notifyDataSetChanged();
+                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override protected void onStop() {
         fragment.unsubscribe(true);
+        busSubscription.unsubscribe();
         super.onStop();
     }
 

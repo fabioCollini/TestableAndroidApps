@@ -60,4 +60,9 @@ public class AppModule {
     public Executor provideExecutor() {
         return Executors.newCachedThreadPool();
     }
+
+    @Provides @Singleton
+    public RepoService provideRepoService(GitHubService gitHubService) {
+        return new RepoService(gitHubService);
+    }
 }

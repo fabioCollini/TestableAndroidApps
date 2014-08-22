@@ -1,6 +1,7 @@
 package it.cosenonjaviste.testableandroidapps;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.LayoutInflater;
@@ -55,6 +56,7 @@ public class RepoAdapter extends BaseAdapter {
         RowWrapper rowWrapper = (RowWrapper) convertView.getTag();
         Repo repo = getItem(position);
         rowWrapper.text.setText(repo.toString());
+        rowWrapper.text.setTypeface(null, repo.isUpdating() ? Typeface.ITALIC : Typeface.NORMAL);
         Picasso.with(context).load(repo.getOwner().getAvatar()).into(rowWrapper.image);
         return convertView;
     }

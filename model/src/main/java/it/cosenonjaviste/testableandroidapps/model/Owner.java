@@ -12,6 +12,14 @@ public class Owner {
 
     @SerializedName("avatar_url") String avatar;
 
+    public Owner() {
+    }
+
+    public Owner(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public long getId() {
         return id;
     }
