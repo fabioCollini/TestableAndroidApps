@@ -2,6 +2,7 @@ package it.cosenonjaviste.testableandroidapps.base;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 
 /**
@@ -23,19 +24,12 @@ public class EndlessSubject<T> implements Observer<T> {
     }
 
     public Subscription subscribe(final EndlessObserver<T> endlessObserver) {
-        return subject.subscribe(new Observer<Result<T>>() {
-            @Override public void onCompleted() {
-            }
-
-            @Override public void onError(Throwable e) {
-                endlessObserver.onNextError(e);
-            }
-
-            @Override public void onNext(Result<T> pair) {
-                if (pair.throwable != null) {
-                    endlessObserver.onNextError(pair.throwable);
+        return subject.subscribe(new Action1<Result<T>>() {
+            @Override public void call(Result<T> result) {
+                if (result.throwable != null) {
+                    endlessObserver.onNextError(result.throwable);
                 } else {
-                    endlessObserver.onNext(pair.success);
+                    endlessObserver.onNext(result.success);
                 }
             }
         });
