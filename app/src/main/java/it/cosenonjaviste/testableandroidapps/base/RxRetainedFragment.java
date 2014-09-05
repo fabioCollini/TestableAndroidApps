@@ -7,6 +7,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -15,69 +16,59 @@ import rx.subscriptions.Subscriptions;
  */
 public class RxRetainedFragment<T> extends Fragment {
 
-    private static final String TAG = "retainedFragmentTag";
+    private ConnectableObservable<T> observable;
 
-    private Observable<T> observable;
+    private Subscription subscription = UNSUBSCRIBED_SUBSCRIPTION;
 
-    private Subscription subscription = Subscriptions.empty();
-
-    private Subscription retainedSubscription = Subscriptions.empty();
+    private Subscription connectableSubscription = Subscriptions.empty();
 
     public RxRetainedFragment() {
         setRetainInstance(true);
     }
 
-    public static <T> RxRetainedFragment<T> getFragment(FragmentActivity activity) {
-        RxRetainedFragment<T> fragment = (RxRetainedFragment<T>) activity.getSupportFragmentManager().findFragmentByTag(TAG);
+    private static final Subscription UNSUBSCRIBED_SUBSCRIPTION = new Subscription() {
+        @Override public void unsubscribe() {
+        }
+
+        @Override public boolean isUnsubscribed() {
+            return true;
+        }
+    };
+
+    public static <T> RxRetainedFragment<T> getFragment(FragmentActivity activity, String tag) {
+        RxRetainedFragment<T> fragment = (RxRetainedFragment<T>) activity.getSupportFragmentManager().findFragmentByTag(tag);
         if (fragment == null) {
             fragment = new RxRetainedFragment<T>();
-            activity.getSupportFragmentManager().beginTransaction().add(fragment, TAG).commit();
+            activity.getSupportFragmentManager().beginTransaction().add(fragment, tag).commit();
         }
         return fragment;
     }
 
-    public boolean reconnectObservable(Observer<T> observer) {
-        if (observable != null && subscription == null) {
+    public Subscription reconnectObservable(Observer<T> observer) {
+        if (observable != null && subscription.isUnsubscribed()) {
             subscription = observable.subscribe(observer);
-            return true;
+            return subscription;
         }
-        return false;
+        return UNSUBSCRIBED_SUBSCRIPTION;
     }
 
-    public void connectObservable(Observable<T> observable, Observer<T> observer) {
-        observable = observable.subscribeOn(Schedulers.io())
+    public Subscription connectObservable(Observable<T> observable, Observer<T> observer) {
+        this.observable = observable
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .replay(1).refCount();
-        this.observable = observable;
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
-        subscription = observable.subscribe(observer);
-        retainedSubscription = observable.subscribe(new Observer<T>() {
-            @Override public void onCompleted() {
-                RxRetainedFragment.this.observable = null;
-            }
-
-            @Override public void onError(Throwable e) {
-                RxRetainedFragment.this.observable = null;
-            }
-
-            @Override public void onNext(T t) {
-            }
-        });
+                .replay(1);
+        subscription.unsubscribe();
+        subscription = this.observable.subscribe(observer);
+        connectableSubscription = this.observable.connect();
+        return subscription;
     }
 
     @Override public void onDestroy() {
         super.onDestroy();
-        retainedSubscription.unsubscribe();
+        connectableSubscription.unsubscribe();
     }
 
-    public void unsubscribe(boolean keepObservable) {
-        if (!keepObservable) {
-            retainedSubscription.unsubscribe();
-        }
-        if (subscription != null) {
-            subscription.unsubscribe();
-        }
+    public void destroy() {
+        connectableSubscription.unsubscribe();
     }
 }

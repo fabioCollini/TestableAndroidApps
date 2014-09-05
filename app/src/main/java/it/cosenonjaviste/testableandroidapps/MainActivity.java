@@ -29,6 +29,7 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observer;
 import rx.Subscription;
+import rx.subscriptions.CompositeSubscription;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -65,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
             progress.setVisibility(View.GONE);
         }
     };
-    private Subscription busSubscription;
+    private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
 
         welcomeDialogManager.showDialogIfNeeded();
 
-        fragment = RxRetainedFragment.getFragment(this);
+        fragment = RxRetainedFragment.getFragment(this, "rxRetained");
     }
 
     @OnItemClick(R.id.list) void shareItem(int position) {
@@ -101,11 +102,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onStart() {
         super.onStart();
-        if (fragment.reconnectObservable(observer)) {
+        Subscription s = fragment.reconnectObservable(observer);
+        if (!s.isUnsubscribed()) {
             showProgress();
+            subscriptions.add(s);
         }
 
-        busSubscription = repoService.subscribe(new EndlessObserver<Repo>() {
+        subscriptions.add(repoService.subscribe(new EndlessObserver<Repo>() {
             @Override public void onNext(Repo repo) {
                 repoAdapter.notifyDataSetChanged();
             }
@@ -114,17 +117,18 @@ public class MainActivity extends ActionBarActivity {
                 repoAdapter.notifyDataSetChanged();
                 Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        }));
     }
 
     @Override protected void onStop() {
-        fragment.unsubscribe(true);
-        busSubscription.unsubscribe();
+        subscriptions.unsubscribe();
         super.onStop();
     }
 
     @Override protected void onDestroy() {
-        fragment.unsubscribe(isChangingConfigurations());
+        if (!isChangingConfigurations()) {
+            fragment.destroy();
+        }
         super.onDestroy();
     }
 
@@ -141,7 +145,7 @@ public class MainActivity extends ActionBarActivity {
 
         String queryString = query.getText().toString();
 
-        fragment.connectObservable(repoService.listRepos(queryString), observer);
+        subscriptions.add(fragment.connectObservable(repoService.listRepos(queryString), observer));
     }
 
     private void showProgress() {
