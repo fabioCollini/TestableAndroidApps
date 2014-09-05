@@ -37,7 +37,7 @@ public class RxRetainedFragment<T> extends Fragment {
     }
 
     public boolean reconnectObservable(Observer<T> observer) {
-        if (observable != null) {
+        if (observable != null && subscription == null) {
             subscription = observable.subscribe(observer);
             return true;
         }
@@ -49,7 +49,9 @@ public class RxRetainedFragment<T> extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .replay(1).refCount();
         this.observable = observable;
-        subscription.unsubscribe();
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
         subscription = observable.subscribe(observer);
         retainedSubscription = observable.subscribe(new Observer<T>() {
             @Override public void onCompleted() {
@@ -74,6 +76,8 @@ public class RxRetainedFragment<T> extends Fragment {
         if (!keepObservable) {
             retainedSubscription.unsubscribe();
         }
-        subscription.unsubscribe();
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
     }
 }
