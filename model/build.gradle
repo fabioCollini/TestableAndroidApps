@@ -3,8 +3,14 @@ apply plugin: 'java'
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.10'
-    compile 'com.google.android:android:2.2.1'
-    compile 'com.squareup.retrofit:retrofit:1.6.+'
-    compile 'org.parceler:parceler:0.2.9'
-    compile 'org.parceler:parceler-api:0.2.9'
+    compile('com.google.android:android:2.2.1') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'commons-codec', module: 'commons-codec'
+        exclude group: 'org.khronos', module: 'opengl-api'
+        exclude group: 'xerces', module: 'xmlParserAPIs'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
+    compile 'com.squareup.retrofit:retrofit:1.6.1'
+    compile 'org.parceler:parceler:0.2.12'
+    compile 'org.parceler:parceler-api:0.2.12'
 }
