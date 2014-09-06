@@ -10,6 +10,9 @@ import android.widget.ListView;
 
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
+import org.parceler.Parcels;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,9 +30,11 @@ import it.cosenonjaviste.testableandroidapps.base.BiFunction;
 import it.cosenonjaviste.testableandroidapps.base.Function;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
+import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
+@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
 public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.list) ListView listView;
