@@ -2,9 +2,6 @@ package it.cosenonjaviste.testableandroidapps.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.parceler.Parcel;
-
-@Parcel
 public class Owner {
     long id;
 
