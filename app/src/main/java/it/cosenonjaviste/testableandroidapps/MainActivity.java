@@ -12,6 +12,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
 import org.parceler.Parcels;
 
 import butterknife.ButterKnife;
@@ -19,11 +21,13 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.OnItemClick;
+import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
+@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
 public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.list) ListView listView;
