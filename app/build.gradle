@@ -5,15 +5,22 @@ repositories {
 buildscript {
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath 'com.jakewharton.sdkmanager:gradle-plugin:0.10.+'
+        classpath 'me.champeau.gradle:gradle-groovy-android-plugin:0.3.0'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
     }
 }
 
 apply plugin: 'android-sdk-manager'
 
 apply plugin: 'com.android.application'
+
+apply plugin: 'me.champeau.gradle.groovy-android'
+
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 19
@@ -45,6 +52,13 @@ android {
     }
 }
 
+apt {
+    arguments {
+        resourcePackageName android.defaultConfig.packageName
+        androidManifestFile variant.processResources.manifestFile
+    }
+}
+
 dependencies {
     compile project(':model')
     compile 'com.android.support:appcompat-v7:20.+'
@@ -55,8 +69,10 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:1.6.+'
     compile 'com.squareup.okhttp:okhttp-urlconnection:1.6.+'
 
-    compile 'com.squareup.dagger:dagger-compiler:1.2.1'
+    apt 'com.squareup.dagger:dagger-compiler:1.2.1'
     compile 'com.squareup.dagger:dagger:1.2.1'
+
+    compile 'org.codehaus.groovy:groovy:2.4.0-beta-3:grooid'
 
     androidTestCompile 'com.google.dexmaker:dexmaker:1.0'
     androidTestCompile('com.google.dexmaker:dexmaker-mockito:1.0') {
