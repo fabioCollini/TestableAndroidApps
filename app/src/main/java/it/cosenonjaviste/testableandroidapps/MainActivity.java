@@ -9,10 +9,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.util.List;
-
 import org.parceler.ParcelClass;
 import org.parceler.ParcelClasses;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,9 +27,8 @@ import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.EndlessObserver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
-import it.cosenonjaviste.testableandroidapps.model.GitHubService;
-import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
+import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
