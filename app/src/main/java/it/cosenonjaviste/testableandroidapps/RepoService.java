@@ -28,14 +28,12 @@ public class RepoService {
     }
 
     public Observable<List<Repo>> listRepos(String queryString) {
-        Observable<List<Repo>> observable = gitHubService.listReposRx(queryString)
-                .subscribeOn(Schedulers.io())
+        return gitHubService.listReposRx(queryString)
                 .map(new Func1<RepoResponse, List<Repo>>() {
                     @Override public List<Repo> call(RepoResponse repoResponse) {
                         return repoResponse.getItems();
                     }
                 });
-        return observable;
     }
 
     private int num;

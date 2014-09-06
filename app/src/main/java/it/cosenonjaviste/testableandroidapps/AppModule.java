@@ -5,7 +5,6 @@ import android.app.Application;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import javax.inject.Singleton;
 
@@ -17,6 +16,7 @@ import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaverImpl;
 import retrofit.RestAdapter;
+import retrofit.android.MainThreadExecutor;
 import retrofit.client.Client;
 import retrofit.client.OkClient;
 
@@ -49,16 +49,17 @@ public class AppModule {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
                 .setClient(client)
+                .setExecutors(new Executor() {
+                    @Override public void execute(Runnable command) {
+                        //http calls are executed in background thread using RxUtils
+                        command.run();
+                    }
+                }, new MainThreadExecutor())
                 .build();
         if (BuildConfig.DEBUG) {
             restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
         }
         return restAdapter.create(GitHubService.class);
-    }
-
-    @Provides @Singleton
-    public Executor provideExecutor() {
-        return Executors.newCachedThreadPool();
     }
 
     @Provides @Singleton

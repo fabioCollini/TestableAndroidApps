@@ -28,10 +28,12 @@ import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.EndlessObserver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
+import it.cosenonjaviste.testableandroidapps.base.RxUtils;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -97,8 +99,8 @@ public class MainActivity extends ActionBarActivity {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        repoService.toggleStar(repo);
-//        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
+//        repoService.toggleStar(repo);
+        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -151,7 +153,8 @@ public class MainActivity extends ActionBarActivity {
 
         String queryString = query.getText().toString();
 
-        subscriptions.add(fragment.connectObservable(repoService.listRepos(queryString), observer));
+        Observable<List<Repo>> observable = RxUtils.background(this, repoService.listRepos(queryString));
+        subscriptions.add(fragment.connectObservable(observable, observer));
     }
 
     private void showProgress() {

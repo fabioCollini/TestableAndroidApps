@@ -6,9 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.observables.ConnectableObservable;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -53,10 +51,7 @@ public class RxRetainedFragment<T> extends Fragment {
     }
 
     public Subscription connectObservable(Observable<T> observable, Observer<T> observer) {
-        this.observable = observable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .replay(1);
+        this.observable = observable.replay(1);
         subscription.unsubscribe();
         subscription = this.observable.subscribe(observer);
         connectableSubscription = this.observable.connect();
