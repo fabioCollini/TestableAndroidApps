@@ -9,6 +9,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,12 +28,15 @@ import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.EndlessObserver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
+import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
+@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
 public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.list) ListView listView;
