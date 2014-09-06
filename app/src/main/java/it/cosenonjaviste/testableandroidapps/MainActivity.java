@@ -13,6 +13,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import org.parceler.ParcelClass;
+import org.parceler.ParcelClasses;
 import org.parceler.Parcels;
 
 import javax.inject.Inject;
@@ -27,11 +29,13 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.service.SearchService;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
+@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
 public class MainActivity extends ActionBarActivity {
 
     @InjectView(R.id.list) ListView listView;
