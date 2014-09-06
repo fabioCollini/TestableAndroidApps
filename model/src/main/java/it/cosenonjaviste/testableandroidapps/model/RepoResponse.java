@@ -1,10 +1,7 @@
 package it.cosenonjaviste.testableandroidapps.model;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 
-@Parcel
 public class RepoResponse {
     ArrayList<Repo> items;
 
