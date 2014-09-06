@@ -8,7 +8,6 @@ import it.cosenonjaviste.testableandroidapps.model.Repo
 import rx.Subscriber
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
-import rx.functions.Action0
 import rx.schedulers.Schedulers
 
 /**
@@ -27,7 +26,7 @@ class RepoService {
     public rx.Observable<List<Repo>> listRepos(String queryString) {
         rx.Observable<List<Repo>> observable = gitHubService.listReposRx(queryString)
                 .subscribeOn(Schedulers.io())
-                .map({ it.getItems() });
+                .map({ (List<Repo>) it.getItems() });
         return observable;
     }
 
@@ -39,29 +38,21 @@ class RepoService {
 
     public void toggleStar(final Repo repo) {
         rx.Observable
-                .create(new rx.Observable.OnSubscribe<Repo>() {
-            @Override
-            public void call(Subscriber<? super Repo> subscriber) {
-                try {
-                    repo.setUpdating(true);
-                    subscriber.onNext(repo);
-                    Thread.sleep(2000);
-                    num++;
+                .create({ Subscriber<? super Repo> subscriber ->
+            try {
+                repo.setUpdating(true);
+                subscriber.onNext(repo);
+                Thread.sleep(2000);
+                num++;
 //                    int aaa = 1 / (num % 3);
-                    repo.toggleStar();
-                    subscriber.onNext(repo);
-                    subscriber.onCompleted();
-                } catch (Throwable e) {
-                    subscriber.onError(e);
-                }
+                repo.toggleStar();
+                subscriber.onNext(repo);
+                subscriber.onCompleted();
+            } catch (Throwable e) {
+                subscriber.onError(e);
             }
-        })
-                .finallyDo(new Action0() {
-            @Override
-            public void call() {
-                repo.setUpdating(false);
-            }
-        })
+        } as rx.Observable.OnSubscribe<Repo>)
+                .finallyDo({ repo.setUpdating(false) })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(subject);
