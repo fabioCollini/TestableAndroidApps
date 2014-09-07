@@ -11,5 +11,5 @@ dependencies {
         exclude group: 'xpp3', module: 'xpp3'
     }
     compile 'com.squareup.retrofit:retrofit:1.6.1'
-    compile 'com.netflix.rxjava:rxjava-android:0.20.3'
+    compile 'com.netflix.rxjava:rxjava-android:0.20.4'
 }
