@@ -133,13 +133,6 @@ public class MainActivity extends ActionBarActivity {
         super.onStop();
     }
 
-    @Override protected void onDestroy() {
-        if (!isChangingConfigurations()) {
-            fragment.destroy();
-        }
-        super.onDestroy();
-    }
-
     @OnEditorAction(R.id.query) boolean onSearch(int actionId) {
         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
             executeSearch();

@@ -62,8 +62,4 @@ public class RxRetainedFragment<T> extends Fragment {
         super.onDestroy();
         connectableSubscription.unsubscribe();
     }
-
-    public void destroy() {
-        connectableSubscription.unsubscribe();
-    }
 }
