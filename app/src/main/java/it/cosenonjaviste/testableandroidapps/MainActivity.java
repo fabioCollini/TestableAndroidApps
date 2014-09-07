@@ -36,6 +36,7 @@ import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
@@ -56,8 +57,6 @@ public class MainActivity extends ActionBarActivity {
     @Inject ShareHelper shareHelper;
 
     private RepoAdapter repoAdapter;
-
-    private RxRetainedFragment<List<Repo>> fragment;
 
     private Observer<List<Repo>> observer = new Observer<List<Repo>>() {
         @Override public void onCompleted() {
@@ -93,8 +92,6 @@ public class MainActivity extends ActionBarActivity {
         listView.setAdapter(repoAdapter);
 
         welcomeDialogManager.showDialogIfNeeded();
-
-        fragment = RxRetainedFragment.getFragment(this, "rxRetained");
     }
 
     @OnItemClick(R.id.list) void shareItem(int position) {
@@ -110,11 +107,12 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onStart() {
         super.onStart();
-        Subscription s = fragment.reconnectObservable(observer);
-        if (!s.isUnsubscribed()) {
-            showProgress();
-            subscriptions.add(s);
-        }
+        Subscription s = RxRetainedFragment.reconnectObservable(this, "rxRetained", observer, new Action0() {
+            @Override public void call() {
+                showProgress();
+            }
+        });
+        subscriptions.add(s);
 
         subscriptions.add(repoService.subscribe(new EndlessObserver<Repo>() {
             @Override public void onNext(Repo repo) {
@@ -142,12 +140,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
-        showProgress();
-
         String queryString = query.getText().toString();
 
         Observable<List<Repo>> observable = RxUtils.background(this, repoService.listRepos(queryString));
-        subscriptions.add(fragment.connectObservable(observable, observer));
+        subscriptions.add(RxRetainedFragment.connectObservable(this, "rxRetained", observable, observer, new Action0() {
+            @Override public void call() {
+                showProgress();
+            }
+        }));
     }
 
     private void showProgress() {
