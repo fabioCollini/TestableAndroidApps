@@ -25,18 +25,13 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
-import it.cosenonjaviste.testableandroidapps.base.EndlessObserver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
-import it.cosenonjaviste.testableandroidapps.base.RxRetainedFragment;
-import it.cosenonjaviste.testableandroidapps.base.RxUtils;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
@@ -58,21 +53,6 @@ public class MainActivity extends ActionBarActivity {
 
     private RepoAdapter repoAdapter;
 
-    private Observer<List<Repo>> observer = new Observer<List<Repo>>() {
-        @Override public void onCompleted() {
-        }
-
-        @Override public void onError(Throwable e) {
-            reload.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.GONE);
-        }
-
-        @Override public void onNext(List<Repo> repos) {
-            repoAdapter.reloadData(repos);
-            listView.setVisibility(View.VISIBLE);
-            progress.setVisibility(View.GONE);
-        }
-    };
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +76,8 @@ public class MainActivity extends ActionBarActivity {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-//        repoService.toggleStar(repo);
-        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
+        repoService.toggleStar(this, repo);
+//        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
@@ -107,21 +87,37 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onStart() {
         super.onStart();
-        Subscription s = RxRetainedFragment.reconnectObservable(this, "rxRetained", observer, new Action0() {
-            @Override public void call() {
+        subscriptions.add(repoService.getRepoListObservable().subscribe(new Action1<Observable<List<Repo>>>() {
+            @Override public void call(Observable<List<Repo>> listObservable) {
                 showProgress();
-            }
-        });
-        subscriptions.add(s);
+                subscriptions.add(listObservable.subscribe(new Action1<List<Repo>>() {
+                    @Override public void call(List<Repo> repos) {
+                        repoAdapter.reloadData(repos);
+                        listView.setVisibility(View.VISIBLE);
+                        progress.setVisibility(View.GONE);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override public void call(Throwable throwable) {
+                        reload.setVisibility(View.VISIBLE);
+                        progress.setVisibility(View.GONE);
 
-        subscriptions.add(repoService.subscribe(new EndlessObserver<Repo>() {
-            @Override public void onNext(Repo repo) {
-                repoAdapter.notifyDataSetChanged();
+                    }
+                }));
             }
+        }));
 
-            @Override public void onNextError(Throwable t) {
-                repoAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        subscriptions.add(repoService.getRepoObservable().subscribe(new Action1<Observable<Repo>>() {
+            @Override public void call(Observable<Repo> repoObservable) {
+                repoObservable.subscribe(new Action1<Repo>() {
+                    @Override public void call(Repo repo) {
+                        repoAdapter.notifyDataSetChanged();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override public void call(Throwable t) {
+                        repoAdapter.notifyDataSetChanged();
+                        Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }));
     }
@@ -141,13 +137,7 @@ public class MainActivity extends ActionBarActivity {
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
         String queryString = query.getText().toString();
-
-        Observable<List<Repo>> observable = RxUtils.background(this, repoService.listRepos(queryString));
-        subscriptions.add(RxRetainedFragment.connectObservable(this, "rxRetained", observable, observer, new Action0() {
-            @Override public void call() {
-                showProgress();
-            }
-        }));
+        repoService.listRepos(this, queryString);
     }
 
     private void showProgress() {
