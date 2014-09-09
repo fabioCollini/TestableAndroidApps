@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import java.util.List;
 
 import it.cosenonjaviste.testableandroidapps.base.ObservableQueue;
+import it.cosenonjaviste.testableandroidapps.base.RxFragment;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
@@ -28,47 +29,48 @@ public class RepoService {
     }
 
     public void listRepos(FragmentActivity activity, String queryString) {
-        loadQueue.start(activity, gitHubService.listReposRx(queryString)
+        Observable<List<Repo>> observable = gitHubService.listReposRx(queryString)
                 .map(new Func1<RepoResponse, List<Repo>>() {
                     @Override public List<Repo> call(RepoResponse repoResponse) {
                         return repoResponse.getItems();
                     }
-                }));
+                });
+        loadQueue.onNext(RxFragment.bindActivity(activity, observable));
     }
 
     public Observable<Observable<List<Repo>>> getRepoListObservable() {
-        return loadQueue.getObservable();
+        return loadQueue.asObservable();
     }
 
     private int num;
 
     public Observable<Observable<Repo>> getRepoObservable() {
-        return repoQueue.getObservable();
+        return repoQueue.asObservable();
     }
 
     public void toggleStar(FragmentActivity activity, final Repo repo) {
-        repoQueue.start(activity,
-                Observable
-                        .create(new Observable.OnSubscribe<Repo>() {
-                            @Override public void call(Subscriber<? super Repo> subscriber) {
-                                try {
-                                    repo.setUpdating(true);
-                                    subscriber.onNext(repo);
-                                    Thread.sleep(2000);
-                                    num++;
-                                    int aaa = 1 / (num % 3);
-                                    repo.toggleStar();
-                                    subscriber.onNext(repo);
-                                    subscriber.onCompleted();
-                                } catch (Throwable e) {
-                                    subscriber.onError(e);
-                                }
-                            }
-                        })
-                        .finallyDo(new Action0() {
-                            @Override public void call() {
-                                repo.setUpdating(false);
-                            }
-                        }));
+        Observable<Repo> observable = Observable
+                .create(new Observable.OnSubscribe<Repo>() {
+                    @Override public void call(Subscriber<? super Repo> subscriber) {
+                        try {
+                            repo.setUpdating(true);
+                            subscriber.onNext(repo);
+                            Thread.sleep(2000);
+                            num++;
+                            int aaa = 1 / (num % 3);
+                            repo.toggleStar();
+                            subscriber.onNext(repo);
+                            subscriber.onCompleted();
+                        } catch (Throwable e) {
+                            subscriber.onError(e);
+                        }
+                    }
+                })
+                .finallyDo(new Action0() {
+                    @Override public void call() {
+                        repo.setUpdating(false);
+                    }
+                });
+        repoQueue.onNext(RxFragment.bindActivity(activity, observable));
     }
 }
