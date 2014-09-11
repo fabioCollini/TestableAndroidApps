@@ -15,6 +15,7 @@ public class ObservableQueue<T> {
     private PublishSubject<Observable<T>> publishSubject = PublishSubject.create();
     private List<Observable<T>> runningObservables = new ArrayList<Observable<T>>();
     private Observable<T> lastCompleted;
+    private Throwable lastThrowable;
 
     private boolean replayLast;
 
@@ -27,10 +28,12 @@ public class ObservableQueue<T> {
         observable.subscribe(new Observer<T>() {
             @Override public void onCompleted() {
                 lastCompleted = observable;
+                lastThrowable = null;
                 runningObservables.remove(observable);
             }
 
             @Override public void onError(Throwable e) {
+                lastThrowable = e;
                 runningObservables.remove(observable);
             }
 
@@ -46,6 +49,8 @@ public class ObservableQueue<T> {
             return Observable.concat(Observable.from(runningObservables), publishSubject);
         } else if (lastCompleted != null && replayLast) {
             return Observable.concat(Observable.just(lastCompleted), publishSubject);
+        } else if (lastThrowable != null && replayLast) {
+            return Observable.concat(Observable.just(Observable.<T>error(lastThrowable)), publishSubject);
         } else {
             return publishSubject.asObservable();
         }
