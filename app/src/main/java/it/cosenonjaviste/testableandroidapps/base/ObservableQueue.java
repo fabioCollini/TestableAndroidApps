@@ -5,8 +5,13 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
+import rx.observers.Observers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by fabiocollini on 07/09/14.
@@ -42,6 +47,22 @@ public class ObservableQueue<T> {
             }
         });
         publishSubject.onNext(observable);
+    }
+
+    public Subscription subscribe(final Action0 onStart, Action1<? super T> onNext, Action1<Throwable> onError) {
+        return subscribe(onStart, Observers.create(onNext, onError));
+    }
+
+    public Subscription subscribe(final Action0 onStart, final Observer<T> observer) {
+        final CompositeSubscription subscriptions = new CompositeSubscription();
+        subscriptions.add(asObservable().subscribe(new Action1<Observable<T>>() {
+            @Override public void call(Observable<T> listObservable) {
+                onStart.call();
+                subscriptions.add(listObservable.subscribe(observer));
+            }
+        }));
+
+        return subscriptions;
     }
 
     public Observable<Observable<T>> asObservable() {

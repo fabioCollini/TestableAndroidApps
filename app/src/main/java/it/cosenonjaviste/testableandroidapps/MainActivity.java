@@ -30,7 +30,7 @@ import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
-import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -87,37 +87,36 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onStart() {
         super.onStart();
-        subscriptions.add(repoService.getRepoListObservable().subscribe(new Action1<Observable<List<Repo>>>() {
-            @Override public void call(Observable<List<Repo>> listObservable) {
-                showProgress();
-                subscriptions.add(listObservable.subscribe(new Action1<List<Repo>>() {
-                    @Override public void call(List<Repo> repos) {
-                        repoAdapter.reloadData(repos);
-                        listView.setVisibility(View.VISIBLE);
-                        progress.setVisibility(View.GONE);
-                    }
-                }, new Action1<Throwable>() {
-                    @Override public void call(Throwable throwable) {
-                        reload.setVisibility(View.VISIBLE);
-                        progress.setVisibility(View.GONE);
 
-                    }
-                }));
+        subscriptions.add(repoService.subscribeRepoList(new Action0() {
+            @Override public void call() {
+                showProgress();
+            }
+        }, new Action1<List<Repo>>() {
+            @Override public void call(List<Repo> repos) {
+                repoAdapter.reloadData(repos);
+                listView.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
+            }
+        }, new Action1<Throwable>() {
+            @Override public void call(Throwable throwable) {
+                reload.setVisibility(View.VISIBLE);
+                progress.setVisibility(View.GONE);
             }
         }));
 
-        subscriptions.add(repoService.getRepoObservable().subscribe(new Action1<Observable<Repo>>() {
-            @Override public void call(Observable<Repo> repoObservable) {
-                repoObservable.subscribe(new Action1<Repo>() {
-                    @Override public void call(Repo repo) {
-                        repoAdapter.notifyDataSetChanged();
-                    }
-                }, new Action1<Throwable>() {
-                    @Override public void call(Throwable t) {
-                        repoAdapter.notifyDataSetChanged();
-                        Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        subscriptions.add(repoService.subscribeRepo(new Action0() {
+            @Override public void call() {
+                repoAdapter.notifyDataSetChanged();
+            }
+        }, new Action1<Repo>() {
+            @Override public void call(Repo repo) {
+                repoAdapter.notifyDataSetChanged();
+            }
+        }, new Action1<Throwable>() {
+            @Override public void call(Throwable t) {
+                repoAdapter.notifyDataSetChanged();
+                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }));
     }

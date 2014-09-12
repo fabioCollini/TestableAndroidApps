@@ -11,7 +11,9 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
@@ -38,23 +40,22 @@ public class RepoService {
         loadQueue.onNext(RxFragment.bindActivity(activity, observable));
     }
 
-    public Observable<Observable<List<Repo>>> getRepoListObservable() {
-        return loadQueue.asObservable();
+    public Subscription subscribeRepoList(final Action0 onStart, Action1<List<Repo>> onNext, Action1<Throwable> onError) {
+        return loadQueue.subscribe(onStart, onNext, onError);
     }
 
     private int num;
 
-    public Observable<Observable<Repo>> getRepoObservable() {
-        return repoQueue.asObservable();
+    public Subscription subscribeRepo(Action0 onStart, Action1<Repo> onNext, Action1<Throwable> onError) {
+        return repoQueue.subscribe(onStart, onNext, onError);
     }
 
     public void toggleStar(FragmentActivity activity, final Repo repo) {
+        repo.setUpdating(true);
         Observable<Repo> observable = Observable
                 .create(new Observable.OnSubscribe<Repo>() {
                     @Override public void call(Subscriber<? super Repo> subscriber) {
                         try {
-                            repo.setUpdating(true);
-                            subscriber.onNext(repo);
                             Thread.sleep(2000);
                             num++;
                             int aaa = 1 / (num % 3);
@@ -73,4 +74,5 @@ public class RepoService {
                 });
         repoQueue.onNext(RxFragment.bindActivity(activity, observable));
     }
+
 }
