@@ -1,10 +1,9 @@
 package it.cosenonjaviste.testableandroidapps.mvc;
 
-import android.support.v4.app.FragmentActivity;
-
 import java.util.List;
 
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueueItem;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcController;
 import rx.Observable;
@@ -30,8 +29,8 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         return new RepoListModel();
     }
 
-    public void listRepos(FragmentActivity activity, String queryString) {
-        repoService.listRepos(activity, queryString);
+    public void listRepos(ContextBinder contextBinder, String queryString) {
+        repoService.listRepos(contextBinder, queryString);
     }
 
     public Subscription subscribeRepoList() {
@@ -87,8 +86,8 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         });
     }
 
-    public void toggleStar(FragmentActivity activity, final Repo repo) {
-        repoService.toggleStar(activity, repo);
+    public void toggleStar(ContextBinder contextBinder, final Repo repo) {
+        repoService.toggleStar(contextBinder, repo);
     }
 
     @Override protected CompositeSubscription initSubscriptions() {

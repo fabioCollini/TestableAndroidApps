@@ -1,14 +1,12 @@
 package it.cosenonjaviste.testableandroidapps.mvc;
 
-import android.support.v4.app.FragmentActivity;
-
 import java.util.List;
 
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueue;
-import it.cosenonjaviste.testableandroidapps.mvc.base.RxFragment;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;
@@ -27,14 +25,14 @@ public class RepoService {
         this.gitHubService = gitHubService;
     }
 
-    public void listRepos(FragmentActivity activity, String queryString) {
+    public void listRepos(ContextBinder contextBinder, String queryString) {
         Observable<List<Repo>> observable = gitHubService.listReposRx(queryString)
                 .map(new Func1<RepoResponse, List<Repo>>() {
                     @Override public List<Repo> call(RepoResponse repoResponse) {
                         return repoResponse.getItems();
                     }
                 });
-        loadQueue.onNext(null, RxFragment.bindActivity(activity, observable));
+        loadQueue.onNext(null, contextBinder.bindObservable(observable));
     }
 
     public ObservableQueue<List<Repo>> getLoadQueue() {
@@ -47,7 +45,7 @@ public class RepoService {
         return repoQueue;
     }
 
-    public void toggleStar(FragmentActivity activity, final Repo repo) {
+    public void toggleStar(ContextBinder contextBinder, final Repo repo) {
         Observable<Repo> observable = Observable
                 .create(new Observable.OnSubscribe<Repo>() {
                     @Override public void call(Subscriber<? super Repo> subscriber) {
@@ -63,7 +61,7 @@ public class RepoService {
                         }
                     }
                 });
-        repoQueue.onNext(repo, RxFragment.bindActivity(activity, observable));
+        repoQueue.onNext(repo, contextBinder.bindObservable(observable));
     }
 
 }

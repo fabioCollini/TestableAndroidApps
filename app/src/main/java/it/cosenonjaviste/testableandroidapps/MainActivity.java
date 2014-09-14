@@ -73,7 +73,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        repoListController.toggleStar(this, repo);
+        repoListController.toggleStar(new ActivityContextBinder(this), repo);
 //        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
@@ -116,7 +116,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
         String queryString = query.getText().toString();
-        repoListController.listRepos(this, queryString);
+        repoListController.listRepos(new ActivityContextBinder(this), queryString);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)

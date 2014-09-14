@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps.mvc.base;
+package it.cosenonjaviste.testableandroidapps.base;
 
 import android.app.Activity;
 

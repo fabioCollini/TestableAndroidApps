@@ -8,7 +8,6 @@ import org.mockito.MockitoAnnotations;
 
 import dagger.ObjectGraph;
 import it.cosenonjaviste.testableandroidapps.AppModule;
-import it.cosenonjaviste.testableandroidapps.mvc.base.RxUtils;
 import rx.schedulers.Schedulers;
 
 import static com.google.android.apps.common.testing.ui.espresso.Espresso.registerIdlingResources;
