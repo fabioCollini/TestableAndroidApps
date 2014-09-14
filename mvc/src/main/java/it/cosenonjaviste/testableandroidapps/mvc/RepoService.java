@@ -1,14 +1,14 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.mvc;
 
 import android.support.v4.app.FragmentActivity;
 
 import java.util.List;
 
-import it.cosenonjaviste.testableandroidapps.base.ObservableQueue;
-import it.cosenonjaviste.testableandroidapps.base.RxFragment;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueue;
+import it.cosenonjaviste.testableandroidapps.mvc.base.RxFragment;
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func1;

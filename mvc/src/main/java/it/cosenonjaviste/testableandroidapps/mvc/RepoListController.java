@@ -1,32 +1,34 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.mvc;
 
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-
-import org.parceler.Parcels;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueueItem;
+import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcController;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by fabiocollini on 13/09/14.
  */
-public class RepoListController {
+public class RepoListController extends RxMvcController<RepoListModel> {
 
-    @Inject RepoService repoService;
+    private RepoService repoService;
 
-    private RepoListModel model;
-    private Action1<RepoListModel> refreshAction;
+    public RepoListController(RepoService repoService) {
+        super("model");
+        this.repoService = repoService;
+    }
+
+    protected RepoListModel createModel() {
+        return new RepoListModel();
+    }
 
     public void listRepos(FragmentActivity activity, String queryString) {
         repoService.listRepos(activity, queryString);
@@ -59,10 +61,6 @@ public class RepoListController {
                 });
     }
 
-    private void notifyModelChanged() {
-        refreshAction.call(model);
-    }
-
     public Subscription subscribeRepo() {
         return repoService.getRepoQueue().subscribe(new Func1<ObservableQueueItem<Repo>, Observable<Repo>>() {
             @Override public Observable<Repo> call(final ObservableQueueItem<Repo> item) {
@@ -93,25 +91,10 @@ public class RepoListController {
         repoService.toggleStar(activity, repo);
     }
 
-    public Subscription subscribe(final Action1<RepoListModel> refreshAction) {
-        this.refreshAction = refreshAction;
-        CompositeSubscription subscription = new CompositeSubscription();
-        subscription.add(subscribeRepoList());
-        subscription.add(subscribeRepo());
-        notifyModelChanged();
-        return subscription;
-    }
-
-    public void saveInBundle(Bundle outState) {
-        outState.putParcelable("model", Parcels.wrap(model));
-    }
-
-    public void loadFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            model = Parcels.unwrap(savedInstanceState.getParcelable("model"));
-        }
-        if (model == null) {
-            model = new RepoListModel();
-        }
+    @Override protected CompositeSubscription initSubscriptions() {
+        CompositeSubscription s = new CompositeSubscription();
+        s.add(subscribeRepoList());
+        s.add(subscribeRepo());
+        return s;
     }
 }

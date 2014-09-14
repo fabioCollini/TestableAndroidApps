@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.mvc;
 
 import org.parceler.Parcel;
 

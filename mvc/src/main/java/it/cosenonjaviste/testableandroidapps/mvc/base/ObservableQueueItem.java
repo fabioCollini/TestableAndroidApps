@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 import rx.Observable;
 

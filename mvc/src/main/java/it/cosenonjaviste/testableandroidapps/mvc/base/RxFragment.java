@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps.base;
+package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;

@@ -1,9 +1,8 @@
-package it.cosenonjaviste.testableandroidapps.base;
+package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import it.cosenonjaviste.testableandroidapps.ObservableQueueItem;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;

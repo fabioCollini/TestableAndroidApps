@@ -51,6 +51,7 @@ android {
 
 dependencies {
     compile project(':model')
+    compile project(':mvc')
     compile 'com.android.support:appcompat-v7:20.0.0'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile 'com.jakewharton:butterknife:5.1.2'
@@ -61,7 +62,6 @@ dependencies {
     compile 'com.squareup.dagger:dagger:1.2.1'
 
     apt 'org.parceler:parceler:0.2.12'
-    compile 'org.parceler:parceler-api:0.2.12'
 
     compile 'com.squareup.okhttp:okhttp:2.0.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.0.0'
