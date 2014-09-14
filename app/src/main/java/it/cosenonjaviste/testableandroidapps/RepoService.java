@@ -21,7 +21,7 @@ public class RepoService {
 
     private ObservableQueue<Repo> repoQueue = new ObservableQueue<Repo>(false);
 
-    private ObservableQueue<List<Repo>> loadQueue = new ObservableQueue<List<Repo>>(true);
+    private ObservableQueue<List<Repo>> loadQueue = new ObservableQueue<List<Repo>>(false);
 
     public RepoService(GitHubService gitHubService) {
         this.gitHubService = gitHubService;

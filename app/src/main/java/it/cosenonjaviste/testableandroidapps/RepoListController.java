@@ -1,6 +1,9 @@
 package it.cosenonjaviste.testableandroidapps;
 
+import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -22,78 +25,93 @@ public class RepoListController {
 
     @Inject RepoService repoService;
 
-    private RepoListModel model = new RepoListModel();
+    private RepoListModel model;
+    private Action1<RepoListModel> refreshAction;
 
     public void listRepos(FragmentActivity activity, String queryString) {
         repoService.listRepos(activity, queryString);
     }
 
-    public Subscription subscribeRepoList(final Action1<RepoListModel> refreshAction) {
-        return repoService.getLoadQueue().subscribe(new Func1<ObservableQueueItem<List<Repo>>, Observable<RepoListModel>>() {
-            @Override public Observable<RepoListModel> call(ObservableQueueItem<List<Repo>> item) {
-                model.setProgressVisible(true);
-                model.setReloadVisible(false);
-                refreshAction.call(model);
-                return item.getObservable().doOnTerminate(new Action0() {
+    public Subscription subscribeRepoList() {
+        return repoService.getLoadQueue().subscribe(
+                new Action0() {
                     @Override public void call() {
+                        model.setProgressVisible(true);
+                        model.setReloadVisible(false);
+                        notifyModelChanged();
+                    }
+                },
+                new Observer<List<Repo>>() {
+                    @Override public void onCompleted() {
                         model.setProgressVisible(false);
+                        notifyModelChanged();
                     }
-                }).map(new Func1<List<Repo>, RepoListModel>() {
-                    @Override public RepoListModel call(List<Repo> repos) {
-                        model.setRepos(repos);
-                        return model;
-                    }
-                }).doOnError(new Action1<Throwable>() {
-                    @Override public void call(Throwable throwable) {
+
+                    @Override public void onError(Throwable e) {
+                        model.setProgressVisible(false);
                         model.setReloadVisible(true);
+                        notifyModelChanged();
+                    }
+
+                    @Override public void onNext(List<Repo> repos) {
+                        model.setRepos(repos);
                     }
                 });
-            }
-        }, terminateObserver(refreshAction));
     }
 
-    private Observer<RepoListModel> terminateObserver(final Action1<RepoListModel> refreshAction) {
-        return new Observer<RepoListModel>() {
-            @Override public void onCompleted() {
-                refreshAction.call(model);
-            }
-
-            @Override public void onError(Throwable e) {
-                refreshAction.call(model);
-            }
-
-            @Override public void onNext(RepoListModel repoListModel) {
-            }
-        };
+    private void notifyModelChanged() {
+        refreshAction.call(model);
     }
 
-    public Subscription subscribeRepo(final Action1<RepoListModel> refreshAction) {
-        return repoService.getRepoQueue().subscribe(new Func1<ObservableQueueItem<Repo>, Observable<RepoListModel>>() {
-            @Override public Observable<RepoListModel> call(final ObservableQueueItem<Repo> item) {
+    public Subscription subscribeRepo() {
+        return repoService.getRepoQueue().subscribe(new Func1<ObservableQueueItem<Repo>, Observable<Repo>>() {
+            @Override public Observable<Repo> call(final ObservableQueueItem<Repo> item) {
                 model.getUpdatingRepos().add(item.getItem().getId());
-                refreshAction.call(model);
+                notifyModelChanged();
                 return item.getObservable().finallyDo(new Action0() {
                     @Override public void call() {
                         model.getUpdatingRepos().remove(item.getItem().getId());
                     }
-                }).map(new Func1<Repo, RepoListModel>() {
-                    @Override public RepoListModel call(Repo repo) {
-                        return model;
-                    }
                 });
             }
-        }, terminateObserver(refreshAction));
+        }, new Observer<Repo>() {
+            @Override public void onCompleted() {
+                notifyModelChanged();
+            }
+
+            @Override public void onError(Throwable e) {
+                model.setExceptionMessage(e.getMessage());
+                notifyModelChanged();
+            }
+
+            @Override public void onNext(Repo next) {
+            }
+        });
     }
 
     public void toggleStar(FragmentActivity activity, final Repo repo) {
         repoService.toggleStar(activity, repo);
     }
 
-    public Subscription subscribe(final Action1<RepoListModel> action1) {
+    public Subscription subscribe(final Action1<RepoListModel> refreshAction) {
+        this.refreshAction = refreshAction;
         CompositeSubscription subscription = new CompositeSubscription();
-        subscription.add(subscribeRepoList(action1));
-        subscription.add(subscribeRepo(action1));
-        action1.call(model);
+        subscription.add(subscribeRepoList());
+        subscription.add(subscribeRepo());
+        notifyModelChanged();
         return subscription;
+    }
+
+    public void saveInBundle(Bundle outState) {
+        outState.putParcelable("model", Parcels.wrap(model));
+    }
+
+    public void loadFromBundle(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            model = Parcels.unwrap(savedInstanceState.getParcelable("model"));
+        }
+        if (model == null) {
+            model = new RepoListModel();
+        }
     }
 }

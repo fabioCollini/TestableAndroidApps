@@ -23,6 +23,8 @@ public class RepoListModel {
 
     boolean reloadVisible;
 
+    private String exceptionMessage;
+
     public List<Repo> getRepos() {
         return repos;
     }
@@ -33,10 +35,6 @@ public class RepoListModel {
 
     public Set<Long> getUpdatingRepos() {
         return updatingRepos;
-    }
-
-    public void setUpdatingRepos(Set<Long> updatingRepos) {
-        this.updatingRepos = updatingRepos;
     }
 
     public boolean isProgressVisible() {
@@ -53,6 +51,14 @@ public class RepoListModel {
 
     public void setReloadVisible(boolean reloadVisible) {
         this.reloadVisible = reloadVisible;
+    }
+
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
+
+    public void setExceptionMessage(String exceptionMessage) {
+        this.exceptionMessage = exceptionMessage;
     }
 
     @Override public String toString() {

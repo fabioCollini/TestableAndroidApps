@@ -3,10 +3,12 @@ package it.cosenonjaviste.testableandroidapps;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.parceler.ParcelClass;
 import org.parceler.ParcelClasses;
@@ -51,11 +53,6 @@ public class MainActivity extends ActionBarActivity {
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
 
-    //model parcelable associato a activity/fragment con ObservableQueue con replay per i dati
-    //service globali con ObservableQueue senza replay per le azioni
-    //i model sottoscrivono i service per aggiornare i dati
-    //altro livello di service globali con i dati condivisi? O dati condivisi salvati dentro i service?
-
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -68,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
 
         repoAdapter = new RepoAdapter(this);
-        repoAdapter.loadFromBundle(savedInstanceState);
+        repoListController.loadFromBundle(savedInstanceState);
 
         listView.setAdapter(repoAdapter);
 
@@ -83,15 +80,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        repoAdapter.saveInBundle(outState);
+        repoListController.saveInBundle(outState);
     }
 
     @Override protected void onStart() {
         super.onStart();
-        System.out.println("start");
         subscriptions.add(repoListController.subscribe(new Action1<RepoListModel>() {
             @Override public void call(RepoListModel model) {
-                System.out.println("update ui " + model);
                 if (model.isProgressVisible()) {
                     progress.setVisibility(View.VISIBLE);
                     reload.setVisibility(View.GONE);
@@ -105,40 +100,12 @@ public class MainActivity extends ActionBarActivity {
                     reload.setVisibility(View.GONE);
                 }
                 repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
+                if (!TextUtils.isEmpty(model.getExceptionMessage())) {
+                    Toast.makeText(MainActivity.this, model.getExceptionMessage(), Toast.LENGTH_LONG).show();
+                    model.setExceptionMessage(null);
+                }
             }
         }));
-
-//        subscriptions.add(repoListController.subscribeRepoList(new Action0() {
-//            @Override public void call() {
-//                showProgress();
-//            }
-//        }, new Action1<RepoListModel>() {
-//            @Override public void call(RepoListModel model) {
-//                repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
-//                listView.setVisibility(View.VISIBLE);
-//                progress.setVisibility(View.GONE);
-//            }
-//        }, new Action1<Throwable>() {
-//            @Override public void call(Throwable throwable) {
-//                reload.setVisibility(View.VISIBLE);
-//                progress.setVisibility(View.GONE);
-//            }
-//        }));
-//
-//        subscriptions.add(repoListController.subscribeRepo(new Action0() {
-//            @Override public void call() {
-//                repoAdapter.notifyDataSetChanged();
-//            }
-//        }, new Action1<RepoListModel>() {
-//            @Override public void call(RepoListModel model) {
-//                repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
-//            }
-//        }, new Action1<Throwable>() {
-//            @Override public void call(Throwable t) {
-//                repoAdapter.notifyDataSetChanged();
-//                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        }));
     }
 
     @Override protected void onStop() {

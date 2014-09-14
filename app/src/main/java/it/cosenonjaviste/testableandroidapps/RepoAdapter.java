@@ -2,8 +2,6 @@ package it.cosenonjaviste.testableandroidapps;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -69,17 +65,6 @@ public class RepoAdapter extends BaseAdapter {
         this.repos = repos;
         this.updatingRepos = updatingRepos;
         notifyDataSetChanged();
-    }
-
-    public void loadFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            Parcelable parcelable = savedInstanceState.getParcelable(REPOS);
-            repos = Parcels.unwrap(parcelable);
-        }
-    }
-
-    public void saveInBundle(Bundle outState) {
-        outState.putParcelable(REPOS, Parcels.wrap(repos));
     }
 
     static class RowWrapper {
