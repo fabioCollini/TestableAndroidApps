@@ -23,17 +23,19 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
+import it.cosenonjaviste.testableandroidapps.base.ActivityContextBinder;
+import it.cosenonjaviste.testableandroidapps.base.BundleObjectSaver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
+import it.cosenonjaviste.testableandroidapps.base.RxMvcActivity;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListController;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoService;
-import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcActivity;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
-@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class)})
+@ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class), @ParcelClass(RepoListModel.class)})
 public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @InjectView(R.id.list) ListView listView;
@@ -64,7 +66,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
         ButterKnife.inject(this);
 
         repoAdapter = new RepoAdapter(this);
-        repoListController.loadFromBundle(savedInstanceState);
+        repoListController.loadFromBundle(new BundleObjectSaver<RepoListModel>(savedInstanceState, "model"));
 
         listView.setAdapter(repoAdapter);
 
@@ -79,7 +81,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        repoListController.saveInBundle(outState);
+        repoListController.saveInBundle(new BundleObjectSaver(outState, "model"));
     }
 
     @Override protected RepoListController getController() {

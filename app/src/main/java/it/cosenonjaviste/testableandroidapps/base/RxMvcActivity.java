@@ -1,6 +1,9 @@
-package it.cosenonjaviste.testableandroidapps.mvc.base;
+package it.cosenonjaviste.testableandroidapps.base;
 
 import android.support.v7.app.ActionBarActivity;
+
+import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcController;
+import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcView;
 
 /**
  * Created by fabiocollini on 14/09/14.

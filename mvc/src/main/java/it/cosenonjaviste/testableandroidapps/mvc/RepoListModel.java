@@ -1,7 +1,5 @@
 package it.cosenonjaviste.testableandroidapps.mvc;
 
-import org.parceler.Parcel;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,7 +10,6 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 /**
  * Created by fabiocollini on 12/09/14.
  */
-@Parcel
 public class RepoListModel {
 
     List<Repo> repos = new ArrayList<Repo>();

@@ -1,8 +1,7 @@
-package it.cosenonjaviste.testableandroidapps;
+package it.cosenonjaviste.testableandroidapps.base;
 
 import android.support.v4.app.FragmentActivity;
 
-import it.cosenonjaviste.testableandroidapps.base.RxFragment;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
 import rx.Observable;
 import rx.observables.ConnectableObservable;

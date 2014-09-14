@@ -1,9 +1,5 @@
 package it.cosenonjaviste.testableandroidapps.mvc.base;
 
-import android.os.Bundle;
-
-import org.parceler.Parcels;
-
 import rx.Subscription;
 
 /**
@@ -22,14 +18,12 @@ public abstract class RxMvcController<M> {
         this.parcelableName = parcelableName;
     }
 
-    public void saveInBundle(Bundle outState) {
-        outState.putParcelable(parcelableName, Parcels.wrap(model));
+    public void saveInBundle(ObjectSaver<M> objectSaver) {
+        objectSaver.saveInBundle(model);
     }
 
-    public void loadFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            model = Parcels.unwrap(savedInstanceState.getParcelable(parcelableName));
-        }
+    public void loadFromBundle(ObjectSaver<M> objectSaver) {
+        model = objectSaver.loadFromBundle();
         if (model == null) {
             model = createModel();
         }
