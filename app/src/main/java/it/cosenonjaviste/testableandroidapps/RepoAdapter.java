@@ -16,7 +16,9 @@ import com.squareup.picasso.Picasso;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -27,6 +29,8 @@ public class RepoAdapter extends BaseAdapter {
     public static final String REPOS = "repos";
 
     private List<Repo> repos = new ArrayList<Repo>();
+
+    private Set<Long> updatingRepos = new HashSet<Long>();
 
     private Context context;
 
@@ -56,13 +60,14 @@ public class RepoAdapter extends BaseAdapter {
         RowWrapper rowWrapper = (RowWrapper) convertView.getTag();
         Repo repo = getItem(position);
         rowWrapper.text.setText(repo.toString());
-        rowWrapper.text.setTypeface(null, repo.isUpdating() ? Typeface.ITALIC : Typeface.NORMAL);
+        rowWrapper.text.setTypeface(null, updatingRepos.contains(repo.getId()) ? Typeface.ITALIC : Typeface.NORMAL);
         Picasso.with(context).load(repo.getOwner().getAvatar()).into(rowWrapper.image);
         return convertView;
     }
 
-    public void reloadData(List<Repo> repos) {
+    public void reloadData(List<Repo> repos, Set<Long> updatingRepos) {
         this.repos = repos;
+        this.updatingRepos = updatingRepos;
         notifyDataSetChanged();
     }
 

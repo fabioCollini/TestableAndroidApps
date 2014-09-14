@@ -7,12 +7,9 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.parceler.ParcelClass;
 import org.parceler.ParcelClasses;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,7 +27,6 @@ import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 
@@ -47,13 +43,18 @@ public class MainActivity extends ActionBarActivity {
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    @Inject RepoService repoService;
+    @Inject RepoListController repoListController;
 
     @Inject ShareHelper shareHelper;
 
     private RepoAdapter repoAdapter;
 
     private CompositeSubscription subscriptions = new CompositeSubscription();
+
+    //model parcelable associato a activity/fragment con ObservableQueue con replay per i dati
+    //service globali con ObservableQueue senza replay per le azioni
+    //i model sottoscrivono i service per aggiornare i dati
+    //altro livello di service globali con i dati condivisi? O dati condivisi salvati dentro i service?
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +77,7 @@ public class MainActivity extends ActionBarActivity {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        repoService.toggleStar(this, repo);
+        repoListController.toggleStar(this, repo);
 //        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
@@ -87,42 +88,62 @@ public class MainActivity extends ActionBarActivity {
 
     @Override protected void onStart() {
         super.onStart();
-
-        subscriptions.add(repoService.subscribeRepoList(new Action0() {
-            @Override public void call() {
-                showProgress();
-            }
-        }, new Action1<List<Repo>>() {
-            @Override public void call(List<Repo> repos) {
-                repoAdapter.reloadData(repos);
-                listView.setVisibility(View.VISIBLE);
-                progress.setVisibility(View.GONE);
-            }
-        }, new Action1<Throwable>() {
-            @Override public void call(Throwable throwable) {
-                reload.setVisibility(View.VISIBLE);
-                progress.setVisibility(View.GONE);
-            }
-        }));
-
-        subscriptions.add(repoService.subscribeRepo(new Action0() {
-            @Override public void call() {
-                repoAdapter.notifyDataSetChanged();
-            }
-        }, new Action1<Repo>() {
-            @Override public void call(Repo repo) {
-                repoAdapter.notifyDataSetChanged();
-            }
-        }, new Action1<Throwable>() {
-            @Override public void call(Throwable t) {
-                repoAdapter.notifyDataSetChanged();
-                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+        System.out.println("start");
+        subscriptions.add(repoListController.subscribe(new Action1<RepoListModel>() {
+            @Override public void call(RepoListModel model) {
+                System.out.println("update ui " + model);
+                if (model.isProgressVisible()) {
+                    progress.setVisibility(View.VISIBLE);
+                    reload.setVisibility(View.GONE);
+                    listView.setVisibility(View.GONE);
+                }else if (model.isReloadVisible()) {
+                    reload.setVisibility(View.VISIBLE);
+                    progress.setVisibility(View.GONE);
+                } else {
+                    listView.setVisibility(View.VISIBLE);
+                    progress.setVisibility(View.GONE);
+                    reload.setVisibility(View.GONE);
+                }
+                repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
             }
         }));
+
+//        subscriptions.add(repoListController.subscribeRepoList(new Action0() {
+//            @Override public void call() {
+//                showProgress();
+//            }
+//        }, new Action1<RepoListModel>() {
+//            @Override public void call(RepoListModel model) {
+//                repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
+//                listView.setVisibility(View.VISIBLE);
+//                progress.setVisibility(View.GONE);
+//            }
+//        }, new Action1<Throwable>() {
+//            @Override public void call(Throwable throwable) {
+//                reload.setVisibility(View.VISIBLE);
+//                progress.setVisibility(View.GONE);
+//            }
+//        }));
+//
+//        subscriptions.add(repoListController.subscribeRepo(new Action0() {
+//            @Override public void call() {
+//                repoAdapter.notifyDataSetChanged();
+//            }
+//        }, new Action1<RepoListModel>() {
+//            @Override public void call(RepoListModel model) {
+//                repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
+//            }
+//        }, new Action1<Throwable>() {
+//            @Override public void call(Throwable t) {
+//                repoAdapter.notifyDataSetChanged();
+//                Toast.makeText(MainActivity.this, "Error " + t.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        }));
     }
 
     @Override protected void onStop() {
         subscriptions.unsubscribe();
+        subscriptions = new CompositeSubscription();
         super.onStop();
     }
 
@@ -136,13 +157,7 @@ public class MainActivity extends ActionBarActivity {
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
         String queryString = query.getText().toString();
-        repoService.listRepos(this, queryString);
-    }
-
-    private void showProgress() {
-        progress.setVisibility(View.VISIBLE);
-        reload.setVisibility(View.GONE);
-        listView.setVisibility(View.GONE);
+        repoListController.listRepos(this, queryString);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)

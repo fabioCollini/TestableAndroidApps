@@ -11,9 +11,6 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
@@ -37,21 +34,20 @@ public class RepoService {
                         return repoResponse.getItems();
                     }
                 });
-        loadQueue.onNext(RxFragment.bindActivity(activity, observable));
+        loadQueue.onNext(null, RxFragment.bindActivity(activity, observable));
     }
 
-    public Subscription subscribeRepoList(final Action0 onStart, Action1<List<Repo>> onNext, Action1<Throwable> onError) {
-        return loadQueue.subscribe(onStart, onNext, onError);
+    public ObservableQueue<List<Repo>> getLoadQueue() {
+        return loadQueue;
     }
 
     private int num;
 
-    public Subscription subscribeRepo(Action0 onStart, Action1<Repo> onNext, Action1<Throwable> onError) {
-        return repoQueue.subscribe(onStart, onNext, onError);
+    public ObservableQueue<Repo> getRepoQueue() {
+        return repoQueue;
     }
 
     public void toggleStar(FragmentActivity activity, final Repo repo) {
-        repo.setUpdating(true);
         Observable<Repo> observable = Observable
                 .create(new Observable.OnSubscribe<Repo>() {
                     @Override public void call(Subscriber<? super Repo> subscriber) {
@@ -66,13 +62,8 @@ public class RepoService {
                             subscriber.onError(e);
                         }
                     }
-                })
-                .finallyDo(new Action0() {
-                    @Override public void call() {
-                        repo.setUpdating(false);
-                    }
                 });
-        repoQueue.onNext(RxFragment.bindActivity(activity, observable));
+        repoQueue.onNext(repo, RxFragment.bindActivity(activity, observable));
     }
 
 }

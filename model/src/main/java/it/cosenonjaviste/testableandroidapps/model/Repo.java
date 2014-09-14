@@ -15,8 +15,6 @@ public class Repo {
 
     boolean starred;
 
-    boolean updating;
-
     public Repo() {
     }
 
@@ -53,13 +51,5 @@ public class Repo {
 
     public void toggleStar() {
         starred = !starred;
-    }
-
-    public boolean isUpdating() {
-        return updating;
-    }
-
-    public void setUpdating(boolean updating) {
-        this.updating = updating;
     }
 }
