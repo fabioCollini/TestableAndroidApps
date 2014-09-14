@@ -33,7 +33,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         repoService.listRepos(contextBinder, queryString);
     }
 
-    public Subscription subscribeRepoList() {
+    private Subscription subscribeRepoList() {
         return repoService.getLoadQueue().subscribe(
                 new Action0() {
                     @Override public void call() {
@@ -60,7 +60,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
                 });
     }
 
-    public Subscription subscribeRepo() {
+    private Subscription subscribeRepo() {
         return repoService.getRepoQueue().subscribe(new Func1<ObservableQueueItem<Repo>, Observable<Repo>>() {
             @Override public Observable<Repo> call(final ObservableQueueItem<Repo> item) {
                 model.getUpdatingRepos().add(item.getItem().getId());
