@@ -19,27 +19,16 @@ import rx.subscriptions.CompositeSubscription;
 public class ObservableQueue<T> {
     private PublishSubject<ObservableQueueItem<T>> publishSubject = PublishSubject.create();
     private List<ObservableQueueItem<T>> runningObservables = new ArrayList<ObservableQueueItem<T>>();
-    private ObservableQueueItem<T> lastCompleted;
-    private Throwable lastThrowable;
-
-    private boolean replayLast;
-
-    public ObservableQueue(boolean replayLast) {
-        this.replayLast = replayLast;
-    }
 
     public void onNext(T item, final Observable<T> observable) {
         final ObservableQueueItem<T> observableQueueItem = new ObservableQueueItem<T>(item, observable);
         runningObservables.add(observableQueueItem);
         observable.subscribe(new Observer<T>() {
             @Override public void onCompleted() {
-                lastCompleted = observableQueueItem;
-                lastThrowable = null;
                 runningObservables.remove(observableQueueItem);
             }
 
             @Override public void onError(Throwable e) {
-                lastThrowable = e;
                 runningObservables.remove(observableQueueItem);
             }
 
@@ -81,12 +70,6 @@ public class ObservableQueue<T> {
     public Observable<ObservableQueueItem<T>> asObservable() {
         if (!runningObservables.isEmpty()) {
             return Observable.concat(Observable.from(runningObservables), publishSubject);
-        } else if (lastCompleted != null && replayLast) {
-            return Observable.concat(Observable.just(lastCompleted), publishSubject);
-//        } else if (lastThrowable != null && replayLast) {
-//            Observable<Observable<ObservableQueue<T>>> just = Observable.just(Observable.<ObservableQueue<T>>error(lastThrowable));
-//            Observable<? extends Observable<? extends ObservableQueueItem<T>>> aaa = null;
-//            return Observable.concat(aaa, publishSubject);
         } else {
             return publishSubject;
         }

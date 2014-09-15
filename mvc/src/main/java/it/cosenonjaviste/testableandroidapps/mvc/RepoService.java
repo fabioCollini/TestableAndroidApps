@@ -17,9 +17,9 @@ import rx.functions.Func1;
 public class RepoService {
     private GitHubService gitHubService;
 
-    private ObservableQueue<Repo> repoQueue = new ObservableQueue<Repo>(false);
+    private ObservableQueue<Repo> repoQueue = new ObservableQueue<Repo>();
 
-    private ObservableQueue<List<Repo>> loadQueue = new ObservableQueue<List<Repo>>(false);
+    private ObservableQueue<List<Repo>> loadQueue = new ObservableQueue<List<Repo>>();
 
     public RepoService(GitHubService gitHubService) {
         this.gitHubService = gitHubService;
