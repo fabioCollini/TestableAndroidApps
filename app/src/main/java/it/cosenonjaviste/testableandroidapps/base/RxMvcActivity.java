@@ -20,5 +20,10 @@ public abstract class RxMvcActivity<M> extends ActionBarActivity implements RxMv
         super.onStop();
     }
 
+    @Override protected void onDestroy() {
+        getController().destroy();
+        super.onDestroy();
+    }
+
     protected abstract RxMvcController<M> getController();
 }

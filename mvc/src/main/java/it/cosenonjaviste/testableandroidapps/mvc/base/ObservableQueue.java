@@ -9,7 +9,6 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.observables.ConnectableObservable;
 import rx.observers.Observers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -29,7 +28,7 @@ public class ObservableQueue<T> {
         this.replayLast = replayLast;
     }
 
-    public void onNext(T item, final ConnectableObservable<T> observable) {
+    public void onNext(T item, final Observable<T> observable) {
         final ObservableQueueItem<T> observableQueueItem = new ObservableQueueItem<T>(item, observable);
         runningObservables.add(observableQueueItem);
         observable.subscribe(new Observer<T>() {

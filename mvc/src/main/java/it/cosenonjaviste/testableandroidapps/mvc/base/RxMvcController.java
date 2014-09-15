@@ -43,7 +43,6 @@ public abstract class RxMvcController<M> {
 
     public void subscribe(final RxMvcView<M> view) {
         this.view = view;
-        //TODO unsubscribe on activity destroy
         if (subscriptions == null) {
             subscriptions = initSubscriptions();
         }
@@ -51,4 +50,11 @@ public abstract class RxMvcController<M> {
     }
 
     protected abstract Subscription initSubscriptions();
+
+    public void destroy() {
+        if (subscriptions != null) {
+            subscriptions.unsubscribe();
+            subscriptions = null;
+        }
+    }
 }
