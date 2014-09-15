@@ -75,13 +75,13 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        repoListController.toggleStar(new ActivityContextBinder(this), repo);
+        repoListController.toggleStar(repo);
 //        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        repoListController.saveInBundle(new BundleObjectSaver(outState, "model"));
+        repoListController.saveInBundle(new BundleObjectSaver<RepoListModel>(outState, "model"));
     }
 
     @Override protected RepoListController getController() {
@@ -118,7 +118,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
         String queryString = query.getText().toString();
-        repoListController.listRepos(new ActivityContextBinder(this), queryString);
+        repoListController.listRepos(queryString);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
@@ -134,7 +134,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
         }
 
         @Provides @Singleton RepoListController provideController(RepoService repoService) {
-            return new RepoListController(repoService);
+            return new RepoListController(new ActivityContextBinder(activity), repoService);
         }
     }
 }

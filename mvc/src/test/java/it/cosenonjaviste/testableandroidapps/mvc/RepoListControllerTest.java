@@ -13,7 +13,7 @@ import static org.junit.Assert.assertNotNull;
 public class RepoListControllerTest {
     @Test
     public void testLoad() {
-        RepoListController controller = new RepoListController(new RepoService(new GitHubService() {
+        RepoListController controller = new RepoListController(new TestContextBinder(), new RepoService(new GitHubService() {
             @Override public Observable<RepoResponse> listReposRx(@Query("q") String query) {
                 return Observable.just(TestUtils.fromJson("/response.json", RepoResponse.class));
             }
@@ -27,6 +27,6 @@ public class RepoListControllerTest {
             }
         });
 
-        controller.listRepos(new TestContextBinder(), "aa");
+        controller.listRepos("aa");
     }
 }

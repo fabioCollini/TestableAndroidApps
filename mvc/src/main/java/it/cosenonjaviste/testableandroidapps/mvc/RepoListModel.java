@@ -20,7 +20,7 @@ public class RepoListModel {
 
     boolean reloadVisible;
 
-    private String exceptionMessage;
+    String exceptionMessage;
 
     public List<Repo> getRepos() {
         return repos;

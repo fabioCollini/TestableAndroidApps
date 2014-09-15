@@ -20,8 +20,8 @@ public class RepoListController extends RxMvcController<RepoListModel> {
 
     private RepoService repoService;
 
-    public RepoListController(RepoService repoService) {
-        super("model");
+    public RepoListController(ContextBinder contextBinder, RepoService repoService) {
+        super(contextBinder);
         this.repoService = repoService;
     }
 
@@ -29,7 +29,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         return new RepoListModel();
     }
 
-    public void listRepos(ContextBinder contextBinder, String queryString) {
+    public void listRepos(String queryString) {
         repoService.listRepos(contextBinder, queryString);
     }
 
@@ -86,7 +86,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         });
     }
 
-    public void toggleStar(ContextBinder contextBinder, final Repo repo) {
+    public void toggleStar(Repo repo) {
         repoService.toggleStar(contextBinder, repo);
     }
 

@@ -12,10 +12,10 @@ public abstract class RxMvcController<M> {
 
     protected Subscription subscriptions;
 
-    private String parcelableName;
+    protected ContextBinder contextBinder;
 
-    protected RxMvcController(String parcelableName) {
-        this.parcelableName = parcelableName;
+    protected RxMvcController(ContextBinder contextBinder) {
+        this.contextBinder = contextBinder;
     }
 
     public void saveInBundle(ObjectSaver<M> objectSaver) {
