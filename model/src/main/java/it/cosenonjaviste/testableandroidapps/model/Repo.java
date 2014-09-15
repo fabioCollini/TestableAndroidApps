@@ -52,4 +52,8 @@ public class Repo {
     public void toggleStar() {
         starred = !starred;
     }
+
+    public boolean isStarred() {
+        return starred;
+    }
 }
