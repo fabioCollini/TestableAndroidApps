@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+apply plugin: 'retrolambda'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':model')

@@ -43,6 +43,10 @@ public class ObservableQueue<T> {
         return subscribe(onStart, Observers.create(onNext, onError));
     }
 
+    public Subscription subscribe(final Action0 onStart, Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
+        return subscribe(onStart, Observers.create(onNext, onError, onCompleted));
+    }
+
     public Subscription subscribe(final Action0 onStart, final Observer<T> observer) {
         final CompositeSubscription subscriptions = new CompositeSubscription();
         subscriptions.add(asObservable().subscribe(new Action1<ObservableQueueItem<T>>() {
@@ -53,6 +57,10 @@ public class ObservableQueue<T> {
         }));
 
         return subscriptions;
+    }
+
+    public <R> Subscription subscribe(Func1<ObservableQueueItem<T>, Observable<R>> onStart, Action1<? super R> onNext, Action1<Throwable> onError, Action0 onCompleted) {
+        return subscribe(onStart, Observers.create(onNext, onError, onCompleted));
     }
 
     public <R> Subscription subscribe(final Func1<ObservableQueueItem<T>, Observable<R>> onStart, final Observer<R> observer) {

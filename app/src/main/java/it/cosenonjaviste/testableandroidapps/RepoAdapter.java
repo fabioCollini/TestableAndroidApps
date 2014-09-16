@@ -22,11 +22,9 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 
 public class RepoAdapter extends BaseAdapter {
 
-    public static final String REPOS = "repos";
+    private List<Repo> repos = new ArrayList<>();
 
-    private List<Repo> repos = new ArrayList<Repo>();
-
-    private Set<Long> updatingRepos = new HashSet<Long>();
+    private Set<Long> updatingRepos = new HashSet<>();
 
     private Context context;
 

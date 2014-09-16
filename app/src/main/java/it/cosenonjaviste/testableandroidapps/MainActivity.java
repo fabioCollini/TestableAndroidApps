@@ -66,7 +66,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
         ButterKnife.inject(this);
 
         repoAdapter = new RepoAdapter(this);
-        repoListController.loadFromBundle(new BundleObjectSaver<RepoListModel>(savedInstanceState, "model"));
+        repoListController.loadFromBundle(new BundleObjectSaver<>(savedInstanceState, "model"));
 
         listView.setAdapter(repoAdapter);
 
@@ -81,7 +81,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        repoListController.saveInBundle(new BundleObjectSaver<RepoListModel>(outState, "model"));
+        repoListController.saveInBundle(new BundleObjectSaver<>(outState, "model"));
     }
 
     @Override protected RepoListController getController() {

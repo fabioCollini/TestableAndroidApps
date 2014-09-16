@@ -1,5 +1,11 @@
 apply plugin: 'java'
 
+apply plugin: 'retrolambda'
+
+retrolambda {
+    jdk '/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/'
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.10'

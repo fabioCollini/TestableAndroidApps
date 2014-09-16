@@ -9,7 +9,6 @@ import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueue;
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Func1;
 
 /**
  * Created by fabiocollini on 03/07/14.
@@ -27,11 +26,7 @@ public class RepoService {
 
     public void listRepos(ContextBinder contextBinder, String queryString) {
         Observable<List<Repo>> observable = gitHubService.listReposRx(queryString)
-                .map(new Func1<RepoResponse, List<Repo>>() {
-                    @Override public List<Repo> call(RepoResponse repoResponse) {
-                        return repoResponse.getItems();
-                    }
-                });
+                .map(RepoResponse::getItems);
         loadQueue.onNext(null, contextBinder.bindObservable(observable));
     }
 
@@ -47,18 +42,16 @@ public class RepoService {
 
     public void toggleStar(ContextBinder contextBinder, final Repo repo) {
         Observable<Repo> observable = Observable
-                .create(new Observable.OnSubscribe<Repo>() {
-                    @Override public void call(Subscriber<? super Repo> subscriber) {
-                        try {
-                            Thread.sleep(2000);
-                            num++;
-                            int aaa = 1 / (num % 3);
-                            repo.toggleStar();
-                            subscriber.onNext(repo);
-                            subscriber.onCompleted();
-                        } catch (Throwable e) {
-                            subscriber.onError(e);
-                        }
+                .create((Subscriber<? super Repo> subscriber) -> {
+                    try {
+                        Thread.sleep(2000);
+                        num++;
+                        int aaa = 1 / (num % 3);
+                        repo.toggleStar();
+                        subscriber.onNext(repo);
+                        subscriber.onCompleted();
+                    } catch (Throwable e) {
+                        subscriber.onError(e);
                     }
                 });
         repoQueue.onNext(repo, contextBinder.bindObservable(observable));

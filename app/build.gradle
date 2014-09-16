@@ -18,7 +18,18 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'com.neenbedankt.android-apt'
 
+apply plugin: 'retrolambda'
+
+retrolambda {
+    jdk '/Library/Java/JavaVirtualMachines/jdk1.8.0.jdk/Contents/Home/'
+}
+
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     compileSdkVersion 19
     buildToolsVersion '19.1.0'
 

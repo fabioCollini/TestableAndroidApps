@@ -4,8 +4,6 @@ import android.app.Application;
 
 import com.squareup.okhttp.OkHttpClient;
 
-import java.util.concurrent.Executor;
-
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -50,12 +48,8 @@ public class AppModule {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://api.github.com")
                 .setClient(client)
-                .setExecutors(new Executor() {
-                    @Override public void execute(Runnable command) {
                         //http calls are executed in background thread using RxUtils
-                        command.run();
-                    }
-                }, new MainThreadExecutor())
+                .setExecutors(Runnable::run, new MainThreadExecutor())
                 .build();
         if (BuildConfig.DEBUG) {
             restAdapter.setLogLevel(RestAdapter.LogLevel.FULL);
