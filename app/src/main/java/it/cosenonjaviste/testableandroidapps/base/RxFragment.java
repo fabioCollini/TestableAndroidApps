@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 
 import rx.Observable;
-import rx.Observer;
+import rx.observables.ConnectableObservable;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -31,21 +31,9 @@ public class RxFragment extends Fragment {
             fragment = new RxFragment();
             fragmentManager.beginTransaction().add(fragment, TAG).commit();
         }
-        Observable<T> refCount = observable.replay(1).refCount();
-        fragment.subscriptions.add(refCount.subscribe(new Observer<T>() {
-            @Override public void onCompleted() {
-
-            }
-
-            @Override public void onError(Throwable e) {
-
-            }
-
-            @Override public void onNext(T t) {
-
-            }
-        }));
-        return refCount;
+        ConnectableObservable<T> connectableObservable = observable.replay();
+        fragment.subscriptions.add(connectableObservable.connect());
+        return connectableObservable;
     }
 
     @Override public void onDestroy() {
