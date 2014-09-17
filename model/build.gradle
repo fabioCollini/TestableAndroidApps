@@ -5,4 +5,5 @@ dependencies {
     testCompile 'junit:junit:4.10'
     compile 'com.squareup.retrofit:retrofit:1.6.1'
     compile 'com.netflix.rxjava:rxjava-android:0.20.4'
+    compile 'com.netflix.rxjava:rxjava-async-util:0.20.4'
 }

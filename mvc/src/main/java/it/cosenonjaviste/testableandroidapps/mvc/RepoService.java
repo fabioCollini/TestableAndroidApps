@@ -8,8 +8,9 @@ import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
 import it.cosenonjaviste.testableandroidapps.mvc.base.ObservableQueue;
 import rx.Observable;
-import rx.Subscriber;
+import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.util.async.Async;
 
 /**
  * Created by fabiocollini on 03/07/14.
@@ -46,21 +47,20 @@ public class RepoService {
     }
 
     public void toggleStar(ContextBinder contextBinder, final Repo repo) {
-        Observable<Repo> observable = Observable
-                .create(new Observable.OnSubscribe<Repo>() {
-                    @Override public void call(Subscriber<? super Repo> subscriber) {
-                        try {
-                            Thread.sleep(2000);
-                            num++;
-                            int aaa = 1 / (num % 3);
-                            repo.toggleStar();
-                            subscriber.onNext(repo);
-                            subscriber.onCompleted();
-                        } catch (Throwable e) {
-                            subscriber.onError(e);
-                        }
-                    }
-                });
+        Observable<Repo> observable = Async.start(new Func0<Repo>() {
+            @Override public Repo call() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                num++;
+                int aaa = 1 / (num % 3);
+                repo.toggleStar();
+
+                return repo;
+            }
+        });
         repoQueue.onNext(repo, contextBinder.bindObservable(observable));
     }
 
