@@ -16,10 +16,9 @@ if [ ! -e ${INITIALIZATION_FILE} ]; then
   echo y | android update sdk --no-ui --filter build-tools-20.0.0 --all > /dev/null
 
   # The SDK version used to compile your project
-  echo y | android update sdk --no-ui --filter android-18 > /dev/null
+  echo y | android update sdk --no-ui --filter android-19 > /dev/null
 
   # Specify at least one system image if you want to run emulator tests
   echo y | android update sdk --no-ui --filter sys-img-armeabi-v7a-android-19 --all > /dev/null
-  ...
   touch ${INITIALIZATION_FILE}
 fi
