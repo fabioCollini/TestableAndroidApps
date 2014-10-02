@@ -52,7 +52,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
             model.setExceptionMessage(e.getMessage());
             notifyModelChanged();
 
-        }, this::notifyModelChanged);
+        }, () -> notifyModelChanged());
     }
 
     public void toggleStar(Repo repo) {

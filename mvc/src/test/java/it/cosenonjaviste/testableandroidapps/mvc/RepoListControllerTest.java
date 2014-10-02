@@ -29,8 +29,8 @@ public class RepoListControllerTest {
             }
         };
 
-        controller.subscribe(null);
         controller.loadFromBundle(new EmptyObjectSaver());
+        controller.subscribe(null);
     }
 
     @Test
