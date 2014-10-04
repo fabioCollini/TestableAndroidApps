@@ -6,10 +6,6 @@ import java.util.List;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.observers.Observers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
@@ -39,37 +35,11 @@ public class ObservableQueue<T> {
         publishSubject.onNext(observableQueueItem);
     }
 
-    public Subscription subscribe(final Action0 onStart, Action1<? super T> onNext, Action1<Throwable> onError) {
-        return subscribe(onStart, Observers.create(onNext, onError));
-    }
-
-    public Subscription subscribe(final Action0 onStart, Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
-        return subscribe(onStart, Observers.create(onNext, onError, onCompleted));
-    }
-
-    public Subscription subscribe(final Action0 onStart, final Observer<T> observer) {
+    public Subscription subscribe(ObserverFactory<T, T> observerFactory) {
         final CompositeSubscription subscriptions = new CompositeSubscription();
-        subscriptions.add(asObservable().subscribe(new Action1<ObservableQueueItem<T>>() {
-            @Override public void call(ObservableQueueItem<T> listObservable) {
-                onStart.call();
-                subscriptions.add(listObservable.getObservable().subscribe(observer));
-            }
-        }));
-
-        return subscriptions;
-    }
-
-    public <R> Subscription subscribe(Func1<ObservableQueueItem<T>, Observable<R>> onStart, Action1<? super R> onNext, Action1<Throwable> onError, Action0 onCompleted) {
-        return subscribe(onStart, Observers.create(onNext, onError, onCompleted));
-    }
-
-    public <R> Subscription subscribe(final Func1<ObservableQueueItem<T>, Observable<R>> onStart, final Observer<R> observer) {
-        final CompositeSubscription subscriptions = new CompositeSubscription();
-        subscriptions.add(asObservable().subscribe(new Action1<ObservableQueueItem<T>>() {
-            @Override public void call(ObservableQueueItem<T> item) {
-                Observable<R> observable = onStart.call(item);
-                subscriptions.add(observable.subscribe(observer));
-            }
+        subscriptions.add(asObservable().subscribe(item -> {
+            Subscription s = observerFactory.subscribe(item.getItem(), item.getObservable());
+            subscriptions.add(s);
         }));
 
         return subscriptions;

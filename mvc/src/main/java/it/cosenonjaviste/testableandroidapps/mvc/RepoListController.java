@@ -27,32 +27,33 @@ public class RepoListController extends RxMvcController<RepoListModel> {
     }
 
     private Subscription subscribeRepoList() {
-        return repoService.getLoadQueue().subscribe(() -> {
+        return repoService.getLoadQueue().subscribe((item, observable) -> {
             model.setProgressVisible(true);
             model.setReloadVisible(false);
             notifyModelChanged();
-        }, model::setRepos, throwable -> {
-            model.setProgressVisible(false);
-            model.setReloadVisible(true);
-            notifyModelChanged();
-        }, () -> {
-            model.setProgressVisible(false);
-            notifyModelChanged();
-
+            return observable.subscribe(model::setRepos, throwable -> {
+                model.setProgressVisible(false);
+                model.setReloadVisible(true);
+                notifyModelChanged();
+            }, () -> {
+                model.setProgressVisible(false);
+                notifyModelChanged();
+            });
         });
     }
 
     private Subscription subscribeRepo() {
-        return repoService.getRepoQueue().subscribe(item -> {
-            model.getUpdatingRepos().add(item.getItem().getId());
+        return repoService.getRepoQueue().subscribe((item, observable) -> {
+            model.getUpdatingRepos().add(item.getId());
             notifyModelChanged();
-            return item.getObservable().finallyDo(() -> model.getUpdatingRepos().remove(item.getItem().getId()));
-        }, repo -> {
-        }, e -> {
-            model.setExceptionMessage(e.getMessage());
-            notifyModelChanged();
-
-        }, () -> notifyModelChanged());
+            return observable
+                    .finallyDo(() -> model.getUpdatingRepos().remove(item.getId()))
+                    .subscribe(repo -> {
+                    }, e -> {
+                        model.setExceptionMessage(e.getMessage());
+                        notifyModelChanged();
+                    }, this::notifyModelChanged);
+        });
     }
 
     public void toggleStar(Repo repo) {
