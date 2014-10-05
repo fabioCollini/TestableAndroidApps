@@ -8,9 +8,10 @@ import rx.observables.ConnectableObservable;
  * Created by fabiocollini on 14/09/14.
  */
 public class TestContextBinder implements ContextBinder {
+
     @Override public <T> Observable<T> bindObservable(Observable<T> observable) {
-        ConnectableObservable<T> refCount = observable.replay();
-        refCount.connect();
-        return refCount;
+        ConnectableObservable<T> publish = observable.publish();
+        publish.connect();
+        return publish;
     }
 }

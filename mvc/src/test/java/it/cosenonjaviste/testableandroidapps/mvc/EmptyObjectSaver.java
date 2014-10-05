@@ -5,11 +5,14 @@ import it.cosenonjaviste.testableandroidapps.mvc.base.ObjectSaver;
 /**
 * Created by fabiocollini on 14/09/14.
 */
-public class EmptyObjectSaver implements ObjectSaver<RepoListModel> {
-    @Override public void saveInBundle(RepoListModel model) {
+public class EmptyObjectSaver<M> implements ObjectSaver<M> {
+    private M model;
+
+    @Override public void saveInBundle(M model) {
+        this.model = model;
     }
 
-    @Override public RepoListModel loadFromBundle() {
-        return null;
+    @Override public M loadFromBundle() {
+        return model;
     }
 }

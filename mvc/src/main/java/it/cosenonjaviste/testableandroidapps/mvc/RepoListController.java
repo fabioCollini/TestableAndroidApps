@@ -30,7 +30,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
     }
 
     private Subscription subscribeRepoList() {
-        return repoService.getLoadQueue().subscribe((item, observable) ->
+        return repoService.getLoadQueue().subscribe(model.getKey(), (item, observable) ->
                         observable.subscribe(model::setRepos, throwable -> {
                             model.setProgressVisible(false);
                             model.setReloadVisible(true);
@@ -44,7 +44,7 @@ public class RepoListController extends RxMvcController<RepoListModel> {
 
     private Subscription subscribeRepo() {
         return repoService.getRepoQueue().subscribe(
-                (item, observable) ->
+                model.getKey(), (item, observable) ->
                         observable.finallyDo(() -> model.getUpdatingRepos().remove(item.getId()))
                                 .subscribe(repo -> {
                                 }, e -> {

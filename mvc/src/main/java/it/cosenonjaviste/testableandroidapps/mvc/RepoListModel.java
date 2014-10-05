@@ -66,4 +66,8 @@ public class RepoListModel {
                 ", reloadVisible=" + reloadVisible +
                 '}';
     }
+
+    public String getKey() {
+        return getClass().getName();
+    }
 }
