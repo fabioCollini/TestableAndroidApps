@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps.mvc.pausable;
+package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 /**
  * Created by fabiocollini on 05/10/14.

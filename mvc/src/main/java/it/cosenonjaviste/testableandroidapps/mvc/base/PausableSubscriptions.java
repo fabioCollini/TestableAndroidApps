@@ -1,4 +1,4 @@
-package it.cosenonjaviste.testableandroidapps.mvc.pausable;
+package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 import rx.Observable;
 import rx.Observer;
