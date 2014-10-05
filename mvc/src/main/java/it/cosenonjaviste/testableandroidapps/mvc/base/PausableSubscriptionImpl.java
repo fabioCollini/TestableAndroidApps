@@ -9,7 +9,7 @@ import rx.subjects.ReplaySubject;
 /**
  * Created by fabiocollini on 05/10/14.
  */
-public class PausableSubscriptionImpl<T> implements PausableSubscription<T> {
+public class PausableSubscriptionImpl<T> implements PausableSubscription {
 
     private final PublishSubject<T> subject;
 
