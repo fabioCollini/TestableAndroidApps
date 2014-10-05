@@ -22,4 +22,11 @@ public class ObservableQueueItem<T> {
     public Observable<T> getObservable() {
         return observable;
     }
+
+    @Override public String toString() {
+        return "ObservableQueueItem{" +
+                "item=" + item +
+                ", observable=" + observable +
+                '}';
+    }
 }
