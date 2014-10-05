@@ -16,7 +16,7 @@ public abstract class RxMvcActivity<M> extends ActionBarActivity implements RxMv
     }
 
     @Override protected void onStop() {
-        getController().unsubscribe();
+        getController().unsubscribeView();
         super.onStop();
     }
 

@@ -31,7 +31,7 @@ public abstract class RxMvcController<M> {
 
     protected abstract M createModel();
 
-    public void unsubscribe() {
+    public void unsubscribeView() {
         view = null;
     }
 
