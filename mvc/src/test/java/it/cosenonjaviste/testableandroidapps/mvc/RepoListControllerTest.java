@@ -29,7 +29,7 @@ public class RepoListControllerTest {
             }
         };
 
-        controller.loadFromBundle(new EmptyObjectSaver());
+        controller.loadFromBundle(new EmptyObjectSaver<>());
         controller.subscribe(null);
     }
 
