@@ -1,6 +1,7 @@
 package it.cosenonjaviste.testableandroidapps.mvc;
 
 import it.cosenonjaviste.testableandroidapps.model.Repo;
+import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import it.cosenonjaviste.testableandroidapps.mvc.base.PresenterArgs;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 

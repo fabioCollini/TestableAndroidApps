@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import retrofit.http.Query;
 import rx.Observable;
 

@@ -9,11 +9,12 @@ import butterknife.ButterKnife;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpView;
-import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscription;
 
 public abstract class RxMvcActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity implements RxMvpView<M> {
 
     public static final String PRESENTER_ID = "presenterId";
+    public static final String MODEL = "model";
+
     protected P presenter;
 
     private long presenterId;
@@ -23,27 +24,25 @@ public abstract class RxMvcActivity<P extends RxMvpPresenter<M>, M> extends Acti
 
         initPresenter(savedInstanceState);
 
-        BundleObjectSaver<M> objectSaver = new BundleObjectSaver<>(savedInstanceState, "model");
+        BundleObjectSaver<M> objectSaver = new BundleObjectSaver<>(savedInstanceState, MODEL);
         BundlePresenterArgs args = new BundlePresenterArgs(getIntent().getExtras());
         presenter.init(new ActivityContextBinder(this), objectSaver, args, getNavigator());
 
         setContentView(getLayoutId());
         ButterKnife.inject(this);
-        initView();
     }
 
     protected abstract Navigator getNavigator();
 
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        presenter.saveInBundle(new BundleObjectSaver<>(outState, "model"));
+        presenter.saveInBundle(new BundleObjectSaver<>(outState, MODEL));
         outState.putLong(PRESENTER_ID, presenterId);
     }
 
     @Override public void onStart() {
         super.onStart();
-        PausableSubscription subscription = presenter.subscribe(this);
-        PausableSubscriptionsFragment.savePausableSubscriptions(getSupportFragmentManager(), subscription);
+        presenter.subscribe(this);
     }
 
     @Override public void onStop() {
@@ -67,9 +66,6 @@ public abstract class RxMvcActivity<P extends RxMvpPresenter<M>, M> extends Acti
 
     protected Provider<P> getProvider() {
         return null;
-    }
-
-    protected void initView() {
     }
 
     protected abstract int getLayoutId();

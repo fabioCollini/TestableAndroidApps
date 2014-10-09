@@ -16,6 +16,6 @@ public class ActivityContextBinder implements ContextBinder {
     }
 
     @Override public <T> Observable<T> bindObservable(Observable<T> observable) {
-        return RxFragment.bindActivity(activity, observable);
+        return RxUtils.background(activity, observable);
     }
 }

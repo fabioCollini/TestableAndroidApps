@@ -52,7 +52,6 @@ public class PausableSubscriptionImpl<T> implements PausableSubscription {
             replaySubjectSubscription.unsubscribe();
             replaySubject.onCompleted();
             Observable<T> newObservable = Observable.concat(replaySubject, subject);
-            //TODO
             replaySubject = null;
             innerSubscription = newObservable
                     .doOnEach(notification -> System.out.println("Concat " + notification))

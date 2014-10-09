@@ -2,7 +2,6 @@ package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.CompositePausableSubscription;
-import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscription;
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscriptions;
 import rx.Observable;
 import rx.Observer;
@@ -51,7 +50,7 @@ public abstract class RxMvpPresenter<M> {
         }
     }
 
-    public PausableSubscription subscribe(final RxMvpView<M> view) {
+    public void subscribe(final RxMvpView<M> view) {
         this.view = view;
         if (pausableSubscriptions != null) {
             pausableSubscriptions.resume();
@@ -60,7 +59,6 @@ public abstract class RxMvpPresenter<M> {
             loadOnFirstStart();
         }
         notifyModelChanged();
-        return pausableSubscriptions;
     }
 
     public void pause() {

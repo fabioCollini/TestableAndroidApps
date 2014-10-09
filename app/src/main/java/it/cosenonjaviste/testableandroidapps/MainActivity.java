@@ -28,9 +28,9 @@ import it.cosenonjaviste.testableandroidapps.base.RxMvcActivity;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
+import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListController;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
-import it.cosenonjaviste.testableandroidapps.mvc.RepoService;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 

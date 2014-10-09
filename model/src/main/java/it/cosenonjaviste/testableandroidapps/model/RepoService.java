@@ -1,10 +1,7 @@
-package it.cosenonjaviste.testableandroidapps.mvc;
+package it.cosenonjaviste.testableandroidapps.model;
 
 import java.util.List;
 
-import it.cosenonjaviste.testableandroidapps.model.GitHubService;
-import it.cosenonjaviste.testableandroidapps.model.Repo;
-import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import rx.Observable;
 import rx.Subscriber;
 

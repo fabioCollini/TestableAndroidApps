@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.model.GitHubService;
-import it.cosenonjaviste.testableandroidapps.mvc.RepoService;
+import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import it.cosenonjaviste.testableandroidapps.utils.Clock;
 import it.cosenonjaviste.testableandroidapps.utils.ClockImpl;
 import it.cosenonjaviste.testableandroidapps.utils.DatePrefsSaver;
