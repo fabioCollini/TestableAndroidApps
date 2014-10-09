@@ -18,18 +18,13 @@ public class RepoListControllerTest {
 
     @Before
     public void setup() {
-        controller = new RepoListController(new TestContextBinder(), new RepoService(new GitHubService() {
+        controller = new RepoListController(new RepoService(new GitHubService() {
             @Override public Observable<RepoResponse> listReposRx(@Query("q") String query) {
                 return Observable.just(TestUtils.fromJson("/response.json", RepoResponse.class));
             }
-        })) {
-            @Override protected RepoListModel createModel() {
-                RepoListControllerTest.this.model = super.createModel();
-                return RepoListControllerTest.this.model;
-            }
-        };
+        }));
 
-        controller.loadFromBundle(new EmptyObjectSaver<>());
+        model = controller.init(new TestContextBinder(), new EmptyObjectSaver<>(), null, null);
         controller.subscribe(null);
     }
 

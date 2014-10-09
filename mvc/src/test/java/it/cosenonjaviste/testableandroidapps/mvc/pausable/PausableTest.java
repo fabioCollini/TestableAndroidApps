@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import it.cosenonjaviste.testableandroidapps.mvc.base.PausableSubscription;
-import it.cosenonjaviste.testableandroidapps.mvc.base.PausableSubscriptions;
+import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscription;
+import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscriptions;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.observers.Observers;

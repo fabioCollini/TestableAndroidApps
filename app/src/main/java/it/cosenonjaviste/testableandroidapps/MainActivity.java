@@ -13,9 +13,9 @@ import org.parceler.ParcelClass;
 import org.parceler.ParcelClasses;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
@@ -23,8 +23,6 @@ import butterknife.OnItemClick;
 import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
-import it.cosenonjaviste.testableandroidapps.base.ActivityContextBinder;
-import it.cosenonjaviste.testableandroidapps.base.BundleObjectSaver;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
 import it.cosenonjaviste.testableandroidapps.base.RxMvcActivity;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
@@ -33,10 +31,11 @@ import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListController;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoService;
+import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class), @ParcelClass(RepoListModel.class)})
-public class MainActivity extends RxMvcActivity<RepoListModel> {
+public class MainActivity extends RxMvcActivity<RepoListController, RepoListModel> {
 
     @InjectView(R.id.list) ListView listView;
 
@@ -48,44 +47,42 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    @Inject RepoListController repoListController;
+    @Inject Provider<RepoListController> presenterProvider;
 
     @Inject ShareHelper shareHelper;
 
     private RepoAdapter repoAdapter;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
         ObjectGraph appObjectGraph = ObjectGraphHolder.getObjectGraph(getApplication());
         ObjectGraph activityObjectGraph = appObjectGraph.plus(new ActivityModule(this));
         activityObjectGraph.inject(this);
 
-        setContentView(R.layout.activity_main);
-
-        ButterKnife.inject(this);
+        super.onCreate(savedInstanceState);
 
         repoAdapter = new RepoAdapter(this);
-        repoListController.loadFromBundle(new BundleObjectSaver<>(savedInstanceState, "model"));
 
         listView.setAdapter(repoAdapter);
 
         welcomeDialogManager.showDialogIfNeeded();
     }
 
+    @Override protected Navigator getNavigator() {
+        return null;
+    }
+
     @OnItemClick(R.id.list) void shareItem(int position) {
         Repo repo = repoAdapter.getItem(position);
-        repoListController.toggleStar(repo);
+        presenter.toggleStar(repo);
 //        shareHelper.share(repo.getName(), repo.getName() + " " + repo.getUrl());
     }
 
-    @Override protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        repoListController.saveInBundle(new BundleObjectSaver<>(outState, "model"));
+    @Override protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
-    @Override protected RepoListController getController() {
-        return repoListController;
+    @Override protected Provider<RepoListController> getProvider() {
+        return presenterProvider;
     }
 
     @Override public void updateView(RepoListModel model) {
@@ -118,7 +115,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
 
     @OnClick({R.id.search, R.id.reload}) void executeSearch() {
         String queryString = query.getText().toString();
-        repoListController.listRepos(queryString);
+        presenter.listRepos(queryString);
     }
 
     @Module(injects = MainActivity.class, addsTo = AppModule.class)
@@ -134,7 +131,7 @@ public class MainActivity extends RxMvcActivity<RepoListModel> {
         }
 
         @Provides @Singleton RepoListController provideController(RepoService repoService) {
-            return new RepoListController(new ActivityContextBinder(activity), repoService);
+            return new RepoListController(repoService);
         }
     }
 }

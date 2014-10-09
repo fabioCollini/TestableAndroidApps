@@ -1,24 +1,18 @@
 package it.cosenonjaviste.testableandroidapps.mvc;
 
 import it.cosenonjaviste.testableandroidapps.model.Repo;
-import it.cosenonjaviste.testableandroidapps.mvc.base.ContextBinder;
-import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvcController;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import it.cosenonjaviste.testableandroidapps.mvc.base.PresenterArgs;
+import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 
-/**
- * Created by fabiocollini on 13/09/14.
- */
-public class RepoListController extends RxMvcController<RepoListModel> {
+public class RepoListController extends RxMvpPresenter<RepoListModel> {
 
     private RepoService repoService;
 
-    public RepoListController(ContextBinder contextBinder, RepoService repoService) {
-        super(contextBinder);
+    public RepoListController(RepoService repoService) {
         this.repoService = repoService;
     }
 
-    protected RepoListModel createModel() {
+    protected RepoListModel createModel(PresenterArgs args) {
         return new RepoListModel();
     }
 
@@ -26,44 +20,30 @@ public class RepoListController extends RxMvcController<RepoListModel> {
         model.setProgressVisible(true);
         model.setReloadVisible(false);
         notifyModelChanged();
-        repoService.listRepos(contextBinder, queryString);
-    }
-
-    private Subscription subscribeRepoList() {
-        return repoService.getLoadQueue().subscribe(model.getKey(), (item, observable) ->
-                        observable.subscribe(model::setRepos, throwable -> {
-                            model.setProgressVisible(false);
-                            model.setReloadVisible(true);
-                            notifyModelChanged();
-                        }, () -> {
-                            model.setProgressVisible(false);
-                            notifyModelChanged();
-                        })
-        );
-    }
-
-    private Subscription subscribeRepo() {
-        return repoService.getRepoQueue().subscribe(
-                model.getKey(), (item, observable) ->
-                        observable.finallyDo(() -> model.getUpdatingRepos().remove(item.getId()))
-                                .subscribe(repo -> {
-                                }, e -> {
-                                    model.setExceptionMessage(e.getMessage());
-                                    notifyModelChanged();
-                                }, () -> notifyModelChanged())
-        );
+        subscribePausable(repoService.listRepos(queryString),
+                repos -> {
+                    model.setRepos(repos);
+                    model.setProgressVisible(false);
+                    notifyModelChanged();
+                }, throwable -> {
+                    model.setProgressVisible(false);
+                    model.setReloadVisible(true);
+                    notifyModelChanged();
+                });
     }
 
     public void toggleStar(Repo repo) {
         model.getUpdatingRepos().add(repo.getId());
         notifyModelChanged();
-        repoService.toggleStar(contextBinder, repo);
-    }
-
-    @Override protected CompositeSubscription initSubscriptions() {
-        CompositeSubscription s = new CompositeSubscription();
-        s.add(subscribeRepoList());
-        s.add(subscribeRepo());
-        return s;
+        subscribePausable(repoService.toggleStar(repo), repo1 -> {
+            System.out.println(repo1);
+        }, e -> {
+            model.getUpdatingRepos().remove(repo.getId());
+            model.setExceptionMessage(e.getMessage());
+            notifyModelChanged();
+        }, () -> {
+            model.getUpdatingRepos().remove(repo.getId());
+            notifyModelChanged();
+        });
     }
 }
