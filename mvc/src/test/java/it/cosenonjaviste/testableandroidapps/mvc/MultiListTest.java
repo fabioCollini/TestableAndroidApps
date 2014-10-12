@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 public class MultiListTest {
 
-    private MultiListController controller;
+    private MultiListPresenter presenter;
     private MultiListModel model;
     private MultiListModel model2;
     private CloneObjectSaver objectSaver;
@@ -71,38 +71,38 @@ public class MultiListTest {
     }
 
     private void go(String name, int[] before1, int[] before2, int[] saved1, int[] saved2, int[] after1, int[] after2, List<Integer> expect1, List<Integer> expect2) {
-        controller = new MultiListController();
+        presenter = new MultiListPresenter();
 
-        model = controller.init(new TestContextBinder(), objectSaver, null, null);
-        controller.subscribe(m -> {
+        model = presenter.init(new TestContextBinder(), objectSaver, null, null);
+        presenter.subscribe(m -> {
         });
 
-        controller.subscribe(null);
+        presenter.subscribe(null);
 
         PublishSubject<Integer> subject1 = PublishSubject.<Integer>create();
         PublishSubject<Integer> subject2 = PublishSubject.<Integer>create();
 
-        controller.call1(subject1);
-        controller.call2(subject2);
+        presenter.call1(subject1);
+        presenter.call2(subject2);
 
         execute(subject1, before1);
         execute(subject2, before2);
 
-        controller.saveInBundle(objectSaver);
-        controller.pause();
+        presenter.saveInBundle(objectSaver);
+        presenter.pause();
 
         execute(subject1, saved1);
         execute(subject2, saved2);
 
-        model2 = controller.init(new TestContextBinder(), objectSaver, null, null);
-        controller.subscribe(null);
+        model2 = presenter.init(new TestContextBinder(), objectSaver, null, null);
+        presenter.subscribe(null);
 
         model2 = objectSaver.loadFromBundle();
 
         execute(subject1, after1);
         execute(subject2, after2);
 
-        controller.destroy();
+        presenter.destroy();
         subject1.onCompleted();
         subject2.onCompleted();
 

@@ -24,18 +24,18 @@ import dagger.Module;
 import dagger.ObjectGraph;
 import dagger.Provides;
 import it.cosenonjaviste.testableandroidapps.base.ObjectGraphHolder;
-import it.cosenonjaviste.testableandroidapps.base.RxMvcActivity;
+import it.cosenonjaviste.testableandroidapps.base.RxMvpActivity;
 import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.model.RepoService;
-import it.cosenonjaviste.testableandroidapps.mvc.RepoListController;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
+import it.cosenonjaviste.testableandroidapps.mvc.RepoListPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class), @ParcelClass(RepoListModel.class)})
-public class MainActivity extends RxMvcActivity<RepoListController, RepoListModel> {
+public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel> {
 
     @InjectView(R.id.list) ListView listView;
 
@@ -47,7 +47,7 @@ public class MainActivity extends RxMvcActivity<RepoListController, RepoListMode
 
     @Inject WelcomeDialogManager welcomeDialogManager;
 
-    @Inject Provider<RepoListController> presenterProvider;
+    @Inject Provider<RepoListPresenter> presenterProvider;
 
     @Inject ShareHelper shareHelper;
 
@@ -81,8 +81,8 @@ public class MainActivity extends RxMvcActivity<RepoListController, RepoListMode
         return R.layout.activity_main;
     }
 
-    @Override protected Provider<RepoListController> getProvider() {
-        return presenterProvider;
+    @Override protected RepoListPresenter createPresenter() {
+        return presenterProvider.get();
     }
 
     @Override public void updateView(RepoListModel model) {
@@ -130,8 +130,8 @@ public class MainActivity extends RxMvcActivity<RepoListController, RepoListMode
             return activity;
         }
 
-        @Provides @Singleton RepoListController provideController(RepoService repoService) {
-            return new RepoListController(repoService);
+        @Provides @Singleton RepoListPresenter providePresenter(RepoService repoService) {
+            return new RepoListPresenter(repoService);
         }
     }
 }

@@ -4,7 +4,7 @@ import it.cosenonjaviste.testableandroidapps.mvc.base.PresenterArgs;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 import rx.subjects.PublishSubject;
 
-public class MultiListController extends RxMvpPresenter<MultiListModel> {
+public class MultiListPresenter extends RxMvpPresenter<MultiListModel> {
 
     @Override protected MultiListModel createModel(PresenterArgs args) {
         return new MultiListModel();

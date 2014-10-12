@@ -3,14 +3,12 @@ package it.cosenonjaviste.testableandroidapps.base;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
-import javax.inject.Provider;
-
 import butterknife.ButterKnife;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpView;
 
-public abstract class RxMvcActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity implements RxMvpView<M> {
+public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity implements RxMvpView<M> {
 
     public static final String PRESENTER_ID = "presenterId";
     public static final String MODEL = "model";
@@ -58,15 +56,13 @@ public abstract class RxMvcActivity<P extends RxMvpPresenter<M>, M> extends Acti
             }
         }
         if (presenter == null) {
-            presenter = getProvider().get();
+            presenter = createPresenter();
             presenterId = PresenterSaverFragment.save(getSupportFragmentManager(), presenter);
         }
         return presenter;
     }
 
-    protected Provider<P> getProvider() {
-        return null;
-    }
+    protected abstract P createPresenter();
 
     protected abstract int getLayoutId();
 }

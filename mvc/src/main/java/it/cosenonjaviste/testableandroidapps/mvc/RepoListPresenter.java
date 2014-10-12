@@ -5,11 +5,11 @@ import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import it.cosenonjaviste.testableandroidapps.mvc.base.PresenterArgs;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
 
-public class RepoListController extends RxMvpPresenter<RepoListModel> {
+public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
 
     private RepoService repoService;
 
-    public RepoListController(RepoService repoService) {
+    public RepoListPresenter(RepoService repoService) {
         this.repoService = repoService;
     }
 

@@ -12,30 +12,30 @@ import rx.Observable;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class RepoListControllerTest {
+public class RepoListPresenterTest {
 
-    private RepoListController controller;
+    private RepoListPresenter presenter;
     private RepoListModel model;
 
     @Before
     public void setup() {
-        controller = new RepoListController(new RepoService(new GitHubService() {
+        presenter = new RepoListPresenter(new RepoService(new GitHubService() {
             @Override public Observable<RepoResponse> listReposRx(@Query("q") String query) {
                 return Observable.just(TestUtils.fromJson("/response.json", RepoResponse.class));
             }
         }));
 
-        model = controller.init(new TestContextBinder(), new EmptyObjectSaver<>(), null, null);
-        controller.subscribe(null);
+        model = presenter.init(new TestContextBinder(), new EmptyObjectSaver<>(), null, null);
+        presenter.subscribe(null);
     }
 
     @Test
     public void testLoad() {
-        controller.listRepos("aa");
+        presenter.listRepos("aa");
 
         assertNotNull(model.getRepos());
 
-        controller.toggleStar(model.getRepos().get(1));
+        presenter.toggleStar(model.getRepos().get(1));
 
         assertEquals(true, model.getRepos().get(1).isStarred());
     }
