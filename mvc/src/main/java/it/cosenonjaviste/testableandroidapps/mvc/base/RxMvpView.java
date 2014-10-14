@@ -5,4 +5,6 @@ package it.cosenonjaviste.testableandroidapps.mvc.base;
  */
 public interface RxMvpView<M> {
     void updateView(M model);
+
+    void showProgress(Object obj);
 }

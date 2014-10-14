@@ -18,16 +18,13 @@ public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
     }
 
     public void listRepos(String queryString) {
-        model.setProgressVisible(true);
-        model.setReloadVisible(false);
-        notifyModelChanged();
         subscribePausable(repoService.listRepos(queryString),
+                () -> view.showProgress(null),
                 repos -> {
+                    model.setReloadVisible(false);
                     model.setRepos(repos);
-                    model.setProgressVisible(false);
                     notifyModelChanged();
                 }, throwable -> {
-                    model.setProgressVisible(false);
                     model.setReloadVisible(true);
                     notifyModelChanged();
                 });
@@ -37,7 +34,6 @@ public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
         model.getUpdatingRepos().add(repo.getId());
         notifyModelChanged();
         subscribePausable(repoService.toggleStar(repo), repo1 -> {
-            System.out.println(repo1);
         }, e -> {
             model.getUpdatingRepos().remove(repo.getId());
             model.setExceptionMessage(e.getMessage());

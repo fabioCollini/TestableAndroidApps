@@ -85,12 +85,14 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         return presenterProvider.get();
     }
 
+    @Override public void showProgress(Object obj) {
+        progress.setVisibility(View.VISIBLE);
+        reload.setVisibility(View.GONE);
+        listView.setVisibility(View.GONE);
+    }
+
     @Override public void updateView(RepoListModel model) {
-        if (model.isProgressVisible()) {
-            progress.setVisibility(View.VISIBLE);
-            reload.setVisibility(View.GONE);
-            listView.setVisibility(View.GONE);
-        } else if (model.isReloadVisible()) {
+        if (model.isReloadVisible()) {
             reload.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
         } else {

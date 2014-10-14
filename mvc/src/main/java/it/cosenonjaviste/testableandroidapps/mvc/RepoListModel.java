@@ -7,16 +7,11 @@ import java.util.Set;
 
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 
-/**
- * Created by fabiocollini on 12/09/14.
- */
 public class RepoListModel {
 
-    List<Repo> repos = new ArrayList<Repo>();
+    List<Repo> repos = new ArrayList<>();
 
-    Set<Long> updatingRepos = new HashSet<Long>();
-
-    boolean progressVisible;
+    Set<Long> updatingRepos = new HashSet<>();
 
     boolean reloadVisible;
 
@@ -34,14 +29,6 @@ public class RepoListModel {
         return updatingRepos;
     }
 
-    public boolean isProgressVisible() {
-        return progressVisible;
-    }
-
-    public void setProgressVisible(boolean progressVisible) {
-        this.progressVisible = progressVisible;
-    }
-
     public boolean isReloadVisible() {
         return reloadVisible;
     }
@@ -56,18 +43,5 @@ public class RepoListModel {
 
     public void setExceptionMessage(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
-    }
-
-    @Override public String toString() {
-        return "RepoListModel{" +
-                "repos=" + repos +
-                ", updatingRepos=" + updatingRepos +
-                ", progressVisible=" + progressVisible +
-                ", reloadVisible=" + reloadVisible +
-                '}';
-    }
-
-    public String getKey() {
-        return getClass().getName();
     }
 }

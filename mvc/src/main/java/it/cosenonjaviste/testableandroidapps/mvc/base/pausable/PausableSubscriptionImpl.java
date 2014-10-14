@@ -3,73 +3,49 @@ package it.cosenonjaviste.testableandroidapps.mvc.base.pausable;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 
-/**
- * Created by fabiocollini on 05/10/14.
- */
-public class PausableSubscriptionImpl<T> implements PausableSubscription {
+class PausableSubscriptionImpl<T> extends PausableSubscriptionAdapter<T> implements PausableSubscription {
 
-    private final PublishSubject<T> subject;
-    private final Observer<T> observer;
-
-    private Subscription mainSubscription;
-
-    private Subscription innerSubscription;
+    private final Subject<T, T> subject;
 
     private Subscription replaySubjectSubscription;
 
     private ReplaySubject<T> replaySubject;
 
-    private Action1<PausableSubscription> onDestroyCallback;
-
-    public PausableSubscriptionImpl(Observable<T> observable, Observer<T> observer) {
-        this.observer = observer;
+    public PausableSubscriptionImpl(Observable<T> observable, Action0 onAttach, Observer<T> observer) {
+        super(onAttach, observer);
         subject = PublishSubject.create();
-        innerSubscription = subject.subscribe(observer);
+        innerSubscription = subscribeInnerObservable(onAttach, subject, observer);
         mainSubscription = observable.subscribe(subject);
     }
 
     @Override public void pause() {
-        if (innerSubscription != null) {
-            innerSubscription.unsubscribe();
-            innerSubscription = null;
-        }
-        if (replaySubject == null && !mainSubscription.isUnsubscribed()) {
-            replaySubject = ReplaySubject.create();
-            replaySubjectSubscription = subject.subscribe(replaySubject);
-        }
-    }
-
-    @Override public void resume() {
-        resume(observer);
-    }
-
-    @Override public void resume(Observer<?> observer) {
-        if (innerSubscription == null && replaySubject != null) {
-            replaySubjectSubscription.unsubscribe();
-            replaySubject.onCompleted();
-            Observable<T> newObservable = Observable.concat(replaySubject, subject);
-            replaySubject = null;
-            innerSubscription = newObservable
-                    .doOnEach(notification -> System.out.println("Concat " + notification))
-                    .subscribe((Observer<? super T>) observer);
+        if (state == RUNNING) {
+            synchronized (this) {
+                if (state == RUNNING) {
+                    replaySubject = ReplaySubject.create();
+                    replaySubjectSubscription = subject.subscribe(replaySubject);
+                    super.pause();
+                }
+            }
         }
     }
 
-    @Override public void destroy() {
-        if (innerSubscription != null && !innerSubscription.isUnsubscribed()) {
-            innerSubscription.unsubscribe();
+    @Override public void resume(Action0 onAttach, Observer<?> observer) {
+        if (state == PAUSED) {
+            synchronized (this) {
+                if (state == PAUSED) {
+                    replaySubjectSubscription.unsubscribe();
+                    replaySubject.onCompleted();
+                    Observable<T> newObservable = Observable.concat(replaySubject, subject);
+                    replaySubject = null;
+                    innerSubscription = subscribeInnerObservable(onAttach, newObservable, (Observer<? super T>) observer);
+                }
+            }
         }
-        mainSubscription.unsubscribe();
-        if (onDestroyCallback != null) {
-            onDestroyCallback.call(this);
-        }
-    }
-
-    @Override public void setOnDestroy(Action1<PausableSubscription> onDestroyCallback) {
-        this.onDestroyCallback = onDestroyCallback;
     }
 }

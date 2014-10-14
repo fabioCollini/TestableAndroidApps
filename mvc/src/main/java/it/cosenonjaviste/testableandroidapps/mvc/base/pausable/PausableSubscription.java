@@ -1,19 +1,14 @@
 package it.cosenonjaviste.testableandroidapps.mvc.base.pausable;
 
 import rx.Observer;
-import rx.functions.Action1;
+import rx.functions.Action0;
 
-/**
- * Created by fabiocollini on 05/10/14.
- */
 public interface PausableSubscription {
     void pause();
 
     void resume();
 
-    void resume(Observer<?> observer);
+    void resume(Action0 onAttach, Observer<?> observer);
 
     void destroy();
-
-    void setOnDestroy(Action1<PausableSubscription> callback);
 }

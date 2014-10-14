@@ -25,7 +25,6 @@ public abstract class RxMvpPresenter<M> {
 
     public void saveInBundle(ObjectSaver<M> objectSaver) {
         objectSaver.saveInBundle(model);
-        newModelCreated = false;
     }
 
     public M init(ContextBinder contextBinder, ObjectSaver<M> objectSaver, PresenterArgs args, Navigator navigator) {
@@ -57,8 +56,9 @@ public abstract class RxMvpPresenter<M> {
         }
         if (newModelCreated) {
             loadOnFirstStart();
+            newModelCreated = false;
+            notifyModelChanged();
         }
-        notifyModelChanged();
     }
 
     public void pause() {
@@ -80,6 +80,10 @@ public abstract class RxMvpPresenter<M> {
 
     protected <T> void subscribePausable(Observable<T> observable, Action1<? super T> onNext, Action1<Throwable> onError) {
         pausableSubscriptions.add(PausableSubscriptions.subscribe(contextBinder.bindObservable(observable), Observers.create(onNext, onError)));
+    }
+
+    protected <T> void subscribePausable(Observable<T> observable, Action0 onAttach, Action1<? super T> onNext, Action1<Throwable> onError) {
+        pausableSubscriptions.add(PausableSubscriptions.subscribe(contextBinder.bindObservable(observable), onAttach, Observers.create(onNext, onError)));
     }
 
     protected <T> void subscribePausable(Observable<T> observable, Action1<? super T> onNext, Action1<Throwable> onError, Scheduler scheduler) {
