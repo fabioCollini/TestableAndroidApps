@@ -6,9 +6,8 @@ import android.support.v7.app.ActionBarActivity;
 import butterknife.ButterKnife;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
-import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpView;
 
-public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity implements RxMvpView<M> {
+public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity {
 
     public static final String PRESENTER_ID = "presenterId";
     public static final String MODEL = "model";
@@ -40,7 +39,7 @@ public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends Acti
 
     @Override public void onStart() {
         super.onStart();
-        presenter.subscribe(this);
+        presenter.subscribe();
     }
 
     @Override public void onStop() {

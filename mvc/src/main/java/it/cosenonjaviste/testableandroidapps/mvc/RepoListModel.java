@@ -15,8 +15,6 @@ public class RepoListModel {
 
     boolean reloadVisible;
 
-    String exceptionMessage;
-
     public List<Repo> getRepos() {
         return repos;
     }
@@ -35,13 +33,5 @@ public class RepoListModel {
 
     public void setReloadVisible(boolean reloadVisible) {
         this.reloadVisible = reloadVisible;
-    }
-
-    public String getExceptionMessage() {
-        return exceptionMessage;
-    }
-
-    public void setExceptionMessage(String exceptionMessage) {
-        this.exceptionMessage = exceptionMessage;
     }
 }

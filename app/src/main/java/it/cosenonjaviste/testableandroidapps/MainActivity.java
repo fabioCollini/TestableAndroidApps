@@ -2,7 +2,6 @@ package it.cosenonjaviste.testableandroidapps;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -29,10 +28,13 @@ import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.model.RepoService;
+import it.cosenonjaviste.testableandroidapps.mvc.EventType;
+import it.cosenonjaviste.testableandroidapps.mvc.ModelEvent;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
+import rx.Observable;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class), @ParcelClass(RepoListModel.class)})
 public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel> {
@@ -67,6 +69,17 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         welcomeDialogManager.showDialogIfNeeded();
     }
 
+    @Override public void onStart() {
+        super.onStart();
+        Observable<ModelEvent<RepoListModel>> updates = presenter.getModelUpdates();
+
+        updates.filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING).subscribe(e -> showProgress());
+        updates.filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING).map(ModelEvent::getModel).subscribe(this::updateView);
+
+        updates.filter(e -> e.getExtra() instanceof Repo).map(ModelEvent::getModel).subscribe(this::updateView);
+        updates.filter(e -> e.getType() == EventType.ERROR).map(ModelEvent::getThrowable).subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show());
+    }
+
     @Override protected Navigator getNavigator() {
         return null;
     }
@@ -85,13 +98,13 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         return presenterProvider.get();
     }
 
-    @Override public void showProgress(Object obj) {
+    public void showProgress() {
         progress.setVisibility(View.VISIBLE);
         reload.setVisibility(View.GONE);
         listView.setVisibility(View.GONE);
     }
 
-    @Override public void updateView(RepoListModel model) {
+    public void updateView(RepoListModel model) {
         if (model.isReloadVisible()) {
             reload.setVisibility(View.VISIBLE);
             progress.setVisibility(View.GONE);
@@ -101,10 +114,6 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
             reload.setVisibility(View.GONE);
         }
         repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
-        if (!TextUtils.isEmpty(model.getExceptionMessage())) {
-            Toast.makeText(MainActivity.this, model.getExceptionMessage(), Toast.LENGTH_LONG).show();
-            model.setExceptionMessage(null);
-        }
     }
 
     @OnEditorAction(R.id.query) boolean onSearch(int actionId) {

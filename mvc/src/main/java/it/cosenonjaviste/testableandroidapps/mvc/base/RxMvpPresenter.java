@@ -1,6 +1,8 @@
 package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 
+import it.cosenonjaviste.testableandroidapps.mvc.EventType;
+import it.cosenonjaviste.testableandroidapps.mvc.ModelEvent;
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.CompositePausableSubscription;
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscriptions;
 import rx.Observable;
@@ -9,11 +11,10 @@ import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.observers.Observers;
+import rx.subjects.PublishSubject;
 
 public abstract class RxMvpPresenter<M> {
     protected M model;
-
-    protected RxMvpView<M> view;
 
     protected CompositePausableSubscription pausableSubscriptions = new CompositePausableSubscription();
 
@@ -22,6 +23,12 @@ public abstract class RxMvpPresenter<M> {
     private boolean newModelCreated;
 
     protected Navigator navigator;
+
+    private PublishSubject<ModelEvent<M>> modelUpdates = PublishSubject.create();
+
+    public Observable<ModelEvent<M>> getModelUpdates() {
+        return modelUpdates.asObservable();
+    }
 
     public void saveInBundle(ObjectSaver<M> objectSaver) {
         objectSaver.saveInBundle(model);
@@ -43,26 +50,22 @@ public abstract class RxMvpPresenter<M> {
 
     protected abstract M createModel(PresenterArgs args);
 
-    public void notifyModelChanged() {
-        if (view != null) {
-            view.updateView(model);
-        }
+    protected void publish(ModelEvent<M> event) {
+        modelUpdates.onNext(event);
     }
 
-    public void subscribe(final RxMvpView<M> view) {
-        this.view = view;
+    public void subscribe() {
         if (pausableSubscriptions != null) {
             pausableSubscriptions.resume();
         }
         if (newModelCreated) {
             loadOnFirstStart();
             newModelCreated = false;
-            notifyModelChanged();
+            publish(new ModelEvent<>(EventType.END_LOADING, model));
         }
     }
 
     public void pause() {
-        view = null;
         if (pausableSubscriptions != null) {
             pausableSubscriptions.pause();
         }
@@ -84,6 +87,10 @@ public abstract class RxMvpPresenter<M> {
 
     protected <T> void subscribePausable(Observable<T> observable, Action0 onAttach, Action1<? super T> onNext, Action1<Throwable> onError) {
         pausableSubscriptions.add(PausableSubscriptions.subscribe(contextBinder.bindObservable(observable), onAttach, Observers.create(onNext, onError)));
+    }
+
+    protected <T> void subscribePausable(Observable<T> observable, Action0 onAttach, Action1<? super T> onNext, Action1<Throwable> onError, Action0 onCompleted) {
+        pausableSubscriptions.add(PausableSubscriptions.subscribe(contextBinder.bindObservable(observable), onAttach, Observers.create(onNext, onError, onCompleted)));
     }
 
     protected <T> void subscribePausable(Observable<T> observable, Action1<? super T> onNext, Action1<Throwable> onError, Scheduler scheduler) {

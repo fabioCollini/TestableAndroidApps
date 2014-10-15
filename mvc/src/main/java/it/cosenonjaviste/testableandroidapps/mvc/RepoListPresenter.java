@@ -19,28 +19,30 @@ public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
 
     public void listRepos(String queryString) {
         subscribePausable(repoService.listRepos(queryString),
-                () -> view.showProgress(null),
+                () -> publish(new ModelEvent<>(EventType.START_LOADING, model)),
                 repos -> {
                     model.setReloadVisible(false);
                     model.setRepos(repos);
-                    notifyModelChanged();
+                    publish(new ModelEvent<>(EventType.END_LOADING, model));
                 }, throwable -> {
                     model.setReloadVisible(true);
-                    notifyModelChanged();
+                    publish(new ModelEvent<>(EventType.ERROR, model, throwable));
                 });
     }
 
     public void toggleStar(Repo repo) {
-        model.getUpdatingRepos().add(repo.getId());
-        notifyModelChanged();
-        subscribePausable(repoService.toggleStar(repo), repo1 -> {
-        }, e -> {
-            model.getUpdatingRepos().remove(repo.getId());
-            model.setExceptionMessage(e.getMessage());
-            notifyModelChanged();
-        }, () -> {
-            model.getUpdatingRepos().remove(repo.getId());
-            notifyModelChanged();
-        });
+        subscribePausable(repoService.toggleStar(repo),
+                () -> {
+                    model.getUpdatingRepos().add(repo.getId());
+                    publish(new ModelEvent<>(EventType.START_LOADING, model, repo));
+                },
+                repo1 -> {
+                }, e -> {
+                    model.getUpdatingRepos().remove(repo.getId());
+                    publish(new ModelEvent<>(EventType.ERROR, model, repo, e));
+                }, () -> {
+                    model.getUpdatingRepos().remove(repo.getId());
+                    publish(new ModelEvent<>(EventType.END_LOADING, model, repo));
+                });
     }
 }
