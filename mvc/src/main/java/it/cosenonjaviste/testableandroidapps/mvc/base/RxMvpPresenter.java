@@ -61,8 +61,8 @@ public abstract class RxMvpPresenter<M> {
         if (newModelCreated) {
             loadOnFirstStart();
             newModelCreated = false;
-            publish(new ModelEvent<>(EventType.END_LOADING, model));
         }
+        publish(new ModelEvent<>(EventType.END_LOADING, model));
     }
 
     public void pause() {

@@ -35,6 +35,7 @@ import it.cosenonjaviste.testableandroidapps.mvc.RepoListPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observable;
+import rx.subscriptions.CompositeSubscription;
 
 @ParcelClasses({@ParcelClass(RepoResponse.class), @ParcelClass(Repo.class), @ParcelClass(Owner.class), @ParcelClass(RepoListModel.class)})
 public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel> {
@@ -55,6 +56,8 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
 
     private RepoAdapter repoAdapter;
 
+    private CompositeSubscription subscriptions = new CompositeSubscription();
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         ObjectGraph appObjectGraph = ObjectGraphHolder.getObjectGraph(getApplication());
         ObjectGraph activityObjectGraph = appObjectGraph.plus(new ActivityModule(this));
@@ -69,15 +72,18 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         welcomeDialogManager.showDialogIfNeeded();
     }
 
-    @Override public void onStart() {
-        super.onStart();
-        Observable<ModelEvent<RepoListModel>> updates = presenter.getModelUpdates();
+    @Override protected void subscribeToModelUpdates(Observable<ModelEvent<RepoListModel>> updates) {
+        subscriptions.add(updates.filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING).subscribe(e -> showProgress()));
+        subscriptions.add(updates.filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING).map(ModelEvent::getModel).subscribe(this::updateView));
 
-        updates.filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING).subscribe(e -> showProgress());
-        updates.filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING).map(ModelEvent::getModel).subscribe(this::updateView);
+        subscriptions.add(updates.filter(e -> e.getExtra() instanceof Repo).map(ModelEvent::getModel).subscribe(this::updateView));
+        subscriptions.add(updates.filter(e -> e.getType() == EventType.ERROR).map(ModelEvent::getThrowable).subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show()));
+    }
 
-        updates.filter(e -> e.getExtra() instanceof Repo).map(ModelEvent::getModel).subscribe(this::updateView);
-        updates.filter(e -> e.getType() == EventType.ERROR).map(ModelEvent::getThrowable).subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show());
+    @Override public void onStop() {
+        super.onStop();
+        subscriptions.unsubscribe();
+        subscriptions = new CompositeSubscription();
     }
 
     @Override protected Navigator getNavigator() {

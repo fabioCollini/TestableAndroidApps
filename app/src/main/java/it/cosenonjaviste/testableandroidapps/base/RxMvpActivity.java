@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 import butterknife.ButterKnife;
+import it.cosenonjaviste.testableandroidapps.mvc.ModelEvent;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
+import rx.Observable;
 
 public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends ActionBarActivity {
 
@@ -39,7 +41,12 @@ public abstract class RxMvpActivity<P extends RxMvpPresenter<M>, M> extends Acti
 
     @Override public void onStart() {
         super.onStart();
+        Observable<ModelEvent<M>> modelUpdates = presenter.getModelUpdates();
+        subscribeToModelUpdates(modelUpdates);
         presenter.subscribe();
+    }
+
+    protected void subscribeToModelUpdates(Observable<ModelEvent<M>> modelUpdates) {
     }
 
     @Override public void onStop() {
