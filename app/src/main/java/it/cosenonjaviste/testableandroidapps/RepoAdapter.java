@@ -59,9 +59,18 @@ public class RepoAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void reloadData(List<Repo> repos, Set<Long> updatingRepos) {
+    public void reloadData(List<Repo> repos) {
         this.repos = repos;
-        this.updatingRepos = updatingRepos;
+        notifyDataSetChanged();
+    }
+
+    public void startUpdatingRepo(long repoId) {
+        updatingRepos.add(repoId);
+        notifyDataSetChanged();
+    }
+
+    public void endUpdatingRepo(long repoId) {
+        updatingRepos.remove(repoId);
         notifyDataSetChanged();
     }
 

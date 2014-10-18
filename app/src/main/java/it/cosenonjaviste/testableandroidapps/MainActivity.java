@@ -73,11 +73,48 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
     }
 
     @Override protected void subscribeToModelUpdates(Observable<ModelEvent<RepoListModel>> updates) {
-        subscriptions.add(updates.filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING).subscribe(e -> showProgress()));
-        subscriptions.add(updates.filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING).map(ModelEvent::getModel).subscribe(this::updateView));
+        subscriptions.add(
+                updates
+                        .filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING)
+                        .subscribe(e -> showProgress())
+        );
+        subscriptions.add(
+                updates
+                        .filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING)
+                        .map(ModelEvent::getModel)
+                        .subscribe(this::updateView)
+        );
 
-        subscriptions.add(updates.filter(e -> e.getExtra() instanceof Repo).map(ModelEvent::getModel).subscribe(this::updateView));
-        subscriptions.add(updates.filter(e -> e.getType() == EventType.ERROR).map(ModelEvent::getThrowable).subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show()));
+        Observable<ModelEvent<RepoListModel>> reposEvents = updates.filter(e -> e.getExtra() instanceof Repo);
+
+        subscriptions.add(
+                reposEvents
+                        .filter(e -> e.getType() == EventType.START_LOADING)
+                        .map(ModelEvent::getExtra)
+                        .ofType(Repo.class)
+                        .map(Repo::getId)
+                        .subscribe(repoAdapter::startUpdatingRepo)
+        );
+        subscriptions.add(
+                reposEvents
+                        .filter(e -> e.getType() == EventType.END_LOADING || e.getType() == EventType.ERROR)
+                        .map(ModelEvent::getExtra)
+                        .ofType(Repo.class)
+                        .map(Repo::getId)
+                        .subscribe(repoAdapter::endUpdatingRepo)
+        );
+        subscriptions.add(
+                reposEvents
+                        .filter(e -> e.getType() == EventType.END_LOADING)
+                        .map(ModelEvent::getModel)
+                        .subscribe(this::updateView)
+        );
+        subscriptions.add(
+                updates
+                        .filter(e -> e.getType() == EventType.ERROR)
+                        .map(ModelEvent::getThrowable)
+                        .subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show())
+        );
     }
 
     @Override public void onStop() {
@@ -119,7 +156,7 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
             progress.setVisibility(View.GONE);
             reload.setVisibility(View.GONE);
         }
-        repoAdapter.reloadData(model.getRepos(), model.getUpdatingRepos());
+        repoAdapter.reloadData(model.getRepos());
     }
 
     @OnEditorAction(R.id.query) boolean onSearch(int actionId) {

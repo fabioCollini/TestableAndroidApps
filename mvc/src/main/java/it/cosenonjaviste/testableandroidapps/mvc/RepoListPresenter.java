@@ -4,6 +4,7 @@ import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoService;
 import it.cosenonjaviste.testableandroidapps.mvc.base.PresenterArgs;
 import it.cosenonjaviste.testableandroidapps.mvc.base.RxMvpPresenter;
+import rx.functions.Actions;
 
 public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
 
@@ -32,17 +33,10 @@ public class RepoListPresenter extends RxMvpPresenter<RepoListModel> {
 
     public void toggleStar(Repo repo) {
         subscribePausable(repoService.toggleStar(repo),
-                () -> {
-                    model.getUpdatingRepos().add(repo.getId());
-                    publish(new ModelEvent<>(EventType.START_LOADING, model, repo));
-                },
-                repo1 -> {
-                }, e -> {
-                    model.getUpdatingRepos().remove(repo.getId());
-                    publish(new ModelEvent<>(EventType.ERROR, model, repo, e));
-                }, () -> {
-                    model.getUpdatingRepos().remove(repo.getId());
-                    publish(new ModelEvent<>(EventType.END_LOADING, model, repo));
-                });
+                () -> publish(new ModelEvent<>(EventType.START_LOADING, model, repo)),
+                Actions.empty(),
+                e -> publish(new ModelEvent<>(EventType.ERROR, model, repo, e)),
+                () -> publish(new ModelEvent<>(EventType.END_LOADING, model, repo))
+        );
     }
 }
