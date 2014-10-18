@@ -28,11 +28,14 @@ import it.cosenonjaviste.testableandroidapps.model.Owner;
 import it.cosenonjaviste.testableandroidapps.model.Repo;
 import it.cosenonjaviste.testableandroidapps.model.RepoResponse;
 import it.cosenonjaviste.testableandroidapps.model.RepoService;
-import it.cosenonjaviste.testableandroidapps.mvc.EventType;
-import it.cosenonjaviste.testableandroidapps.mvc.ModelEvent;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListModel;
 import it.cosenonjaviste.testableandroidapps.mvc.RepoListPresenter;
 import it.cosenonjaviste.testableandroidapps.mvc.base.Navigator;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.EndLoadingModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.EndModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.ErrorModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.ModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.StartLoadingModelEvent;
 import it.cosenonjaviste.testableandroidapps.share.ShareHelper;
 import rx.Observable;
 import rx.subscriptions.CompositeSubscription;
@@ -75,13 +78,16 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
     @Override protected void subscribeToModelUpdates(Observable<ModelEvent<RepoListModel>> updates) {
         subscriptions.add(
                 updates
-                        .filter(e -> e.isExtraEmpty() && e.getType() == EventType.START_LOADING)
+                        .filter(ModelEvent::isExtraEmpty)
+                        .ofType(StartLoadingModelEvent.class)
                         .subscribe(e -> showProgress())
         );
         subscriptions.add(
                 updates
-                        .filter(e -> e.isExtraEmpty() && e.getType() != EventType.START_LOADING)
-                        .map(ModelEvent::getModel)
+                        .filter(ModelEvent::isExtraEmpty)
+                        .ofType(EndModelEvent.class)
+                        .map(EndModelEvent::getModel)
+                        .cast(RepoListModel.class)
                         .subscribe(this::updateView)
         );
 
@@ -89,7 +95,7 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
 
         subscriptions.add(
                 reposEvents
-                        .filter(e -> e.getType() == EventType.START_LOADING)
+                        .ofType(StartLoadingModelEvent.class)
                         .map(ModelEvent::getExtra)
                         .ofType(Repo.class)
                         .map(Repo::getId)
@@ -97,7 +103,7 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         );
         subscriptions.add(
                 reposEvents
-                        .filter(e -> e.getType() == EventType.END_LOADING || e.getType() == EventType.ERROR)
+                        .ofType(EndModelEvent.class)
                         .map(ModelEvent::getExtra)
                         .ofType(Repo.class)
                         .map(Repo::getId)
@@ -105,14 +111,15 @@ public class MainActivity extends RxMvpActivity<RepoListPresenter, RepoListModel
         );
         subscriptions.add(
                 reposEvents
-                        .filter(e -> e.getType() == EventType.END_LOADING)
+                        .ofType(EndLoadingModelEvent.class)
                         .map(ModelEvent::getModel)
+                        .cast(RepoListModel.class)
                         .subscribe(this::updateView)
         );
         subscriptions.add(
                 updates
-                        .filter(e -> e.getType() == EventType.ERROR)
-                        .map(ModelEvent::getThrowable)
+                        .ofType(ErrorModelEvent.class)
+                        .map(ErrorModelEvent::getThrowable)
                         .subscribe(t -> Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show())
         );
     }

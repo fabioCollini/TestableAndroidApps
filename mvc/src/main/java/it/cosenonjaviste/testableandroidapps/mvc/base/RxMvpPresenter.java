@@ -1,8 +1,8 @@
 package it.cosenonjaviste.testableandroidapps.mvc.base;
 
 
-import it.cosenonjaviste.testableandroidapps.mvc.EventType;
-import it.cosenonjaviste.testableandroidapps.mvc.ModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.EndLoadingModelEvent;
+import it.cosenonjaviste.testableandroidapps.mvc.base.events.ModelEvent;
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.CompositePausableSubscription;
 import it.cosenonjaviste.testableandroidapps.mvc.base.pausable.PausableSubscriptions;
 import rx.Observable;
@@ -62,7 +62,7 @@ public abstract class RxMvpPresenter<M> {
             loadOnFirstStart();
             newModelCreated = false;
         }
-        publish(new ModelEvent<>(EventType.END_LOADING, model));
+        publish(new EndLoadingModelEvent<>(model));
     }
 
     public void pause() {
